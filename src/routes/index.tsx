@@ -41,17 +41,17 @@ function HomePage() {
       <div className="grid gap-10">
         <PageHeader eyebrow="Bentornato" title="La tua libreria" />
 
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
           {cards.map((c, i) => (
             <Link
               key={c.label}
               to={c.to}
               style={{ animationDelay: `${i * 60}ms` }}
-              className="group relative animate-rise overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-card transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lift"
+              className="group relative animate-rise overflow-hidden rounded-2xl border border-border bg-card p-3 shadow-card sm:p-5 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lift"
             >
               <c.icon className="size-5 text-primary" />
-              <p className="mt-6 font-display text-5xl font-medium tabular-nums">{c.value}</p>
-              <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
+              <p className="mt-3 font-display text-3xl font-medium tabular-nums sm:mt-6 sm:text-5xl">{c.value}</p>
+              <p className="mt-1 flex items-center gap-1 text-xs leading-tight text-muted-foreground sm:text-sm">
                 {c.label}
                 <ArrowRight className="size-3.5 opacity-0 transition-opacity group-hover:opacity-100" />
               </p>
