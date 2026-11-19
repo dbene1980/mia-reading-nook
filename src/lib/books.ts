@@ -1,0 +1,157 @@
+export const STATI = ["SCARICATO", "DA SCARICARE", "DA COMPRARE", "NON TROVATO"] as const;
+export const TIPI = ["LIBRO", "EBOOK", "AUDIOLIBRO", "FUMETTO"] as const;
+
+export type Stato = (typeof STATI)[number];
+export type Tipo = (typeof TIPI)[number];
+
+export interface Book {
+  id: string;
+  user_id: string;
+  titolo: string;
+  autore: string | null;
+  stato: Stato | null;
+  descrizione: string | null;
+  note: string | null;
+  letto: boolean;
+  data_fine_libro: string | null;
+  rating: number | null;
+  tipo: Tipo | null;
+  copertina_url: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export const STATO_BADGE: Record<Stato, "scaricato" | "dascaricare" | "dacomprare" | "nontrovato"> =
+  {
+    SCARICATO: "scaricato",
+    "DA SCARICARE": "dascaricare",
+    "DA COMPRARE": "dacomprare",
+    "NON TROVATO": "nontrovato",
+  };
+
+export const TIPO_LABEL: Record<Tipo, string> = {
+  LIBRO: "Libro",
+  EBOOK: "Ebook",
+  AUDIOLIBRO: "Audiolibro",
+  FUMETTO: "Fumetto",
+};
+
+function normalize(s: string | null | undefined) {
+  return (s ?? "")
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .trim();
+}
+
+/** True when the query matches title or author (case and accent insensitive). */
+export function matchesQuery(book: Pick<Book, "titolo" | "autore">, query: string) {
+  const q = normalize(query);
+  if (!q) return true;
+  return normalize(book.titolo).includes(q) || normalize(book.autore).includes(q);
+}
+
+export function filterToRead(books: Book[], opts: { query: string; stato: Stato | "ALL" }) {
+  return books
+    .filter((b) => !b.letto)
+    .filter((b) => matchesQuery(b, opts.query))
+    .filter((b) => opts.stato === "ALL" || b.stato === opts.stato)
+    .sort((a, b) => b.created_at.localeCompare(a.created_at));
+}
+
+export function filterRead(
+  books: Book[],
+  opts: { query: string; tipo: Tipo | "ALL"; rating: number | "ALL" },
+) {
+  return books
+    .filter((b) => b.letto)
+    .filter((b) => matchesQuery(b, opts.query))
+    .filter((b) => opts.tipo === "ALL" || b.tipo === opts.tipo)
+    .filter((b) => opts.rating === "ALL" || b.rating === opts.rating)
+    .sort((a, b) => finishedTime(b) - finishedTime(a));
+}
+
+function finishedTime(b: Book) {
+  return b.data_fine_libro ? new Date(b.data_fine_libro).getTime() : 0;
+}
+
+export interface LibraryStats {
+  totalRead: number;
+  readThisYear: number;
+  toRead: number;
+}
+
+export function computeStats(books: Book[], now: Date = new Date()): LibraryStats {
+  const year = now.getFullYear();
+  const read = books.filter((b) => b.letto);
+  return {
+    totalRead: read.length,
+    readThisYear: read.filter(
+      (b) => b.data_fine_libro && new Date(b.data_fine_libro).getFullYear() === year,
+    ).length,
+    toRead: books.length - read.length,
+  };
+}
+
+export type ActivityKind = "added" | "finished";
+export interface Activity {
+  book: Book;
+  kind: ActivityKind;
+  at: string;
+}
+
+/** Latest events across "book added" and "book finished", newest first. */
+export function recentActivity(books: Book[], limit = 3): Activity[] {
+  const events: Activity[] = [];
+  for (const book of books) {
+    events.push({ book, kind: "added", at: book.created_at });
+    if (book.letto && book.data_fine_libro) {
+      events.push({ book, kind: "finished", at: book.data_fine_libro });
+    }
+  }
+  events.sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime());
+  const seen = new Set<string>();
+  const out: Activity[] = [];
+  for (const e of events) {
+    if (seen.has(e.book.id)) continue;
+    seen.add(e.book.id);
+    out.push(e);
+    if (out.length === limit) break;
+  }
+  return out;
+}
+
+export const CSV_COLUMNS: (keyof Book)[] = [
+  "id",
+  "titolo",
+  "autore",
+  "stato",
+  "descrizione",
+  "note",
+  "letto",
+  "data_fine_libro",
+  "rating",
+  "tipo",
+  "copertina_url",
+  "created_at",
+];
+
+function csvCell(value: unknown) {
+  if (value === null || value === undefined) return "";
+  const s = String(value);
+  return /[",\n\r;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+export function booksToCsv(books: Book[]) {
+  const header = CSV_COLUMNS.join(",");
+  const rows = books.map((b) => CSV_COLUMNS.map((c) => csvCell(b[c])).join(","));
+  return [header, ...rows].join("\r\n");
+}
+
+/** Value for <input type="datetime-local"> in the user's local time. */
+export function toLocalInputValue(date: Date) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(
+    date.getHours(),
+  )}:${pad(date.getMinutes())}`;
+}

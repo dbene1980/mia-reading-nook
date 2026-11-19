@@ -10,33 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as DaLeggereRouteImport } from './routes/da-leggere'
+import { Route as LibriLettiRouteImport } from './routes/libri-letti'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DaLeggereRoute = DaLeggereRouteImport.update({
+  id: '/da-leggere',
+  path: '/da-leggere',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibriLettiRoute = LibriLettiRouteImport.update({
+  id: '/libri-letti',
+  path: '/libri-letti',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/da-leggere': typeof DaLeggereRoute
+  '/libri-letti': typeof LibriLettiRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/da-leggere': typeof DaLeggereRoute
+  '/libri-letti': typeof LibriLettiRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/da-leggere': typeof DaLeggereRoute
+  '/libri-letti': typeof LibriLettiRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/auth' | '/da-leggere' | '/libri-letti'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/auth' | '/da-leggere' | '/libri-letti'
+  id: '__root__' | '/' | '/auth' | '/da-leggere' | '/libri-letti'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
+  DaLeggereRoute: typeof DaLeggereRoute
+  LibriLettiRoute: typeof LibriLettiRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +78,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/da-leggere': {
+      id: '/da-leggere'
+      path: '/da-leggere'
+      fullPath: '/da-leggere'
+      preLoaderRoute: typeof DaLeggereRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/libri-letti': {
+      id: '/libri-letti'
+      path: '/libri-letti'
+      fullPath: '/libri-letti'
+      preLoaderRoute: typeof LibriLettiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
+  DaLeggereRoute: DaLeggereRoute,
+  LibriLettiRoute: LibriLettiRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

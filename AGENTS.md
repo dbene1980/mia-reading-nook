@@ -28,3 +28,8 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+- Book domain logic (filters, stats, CSV export) lives as pure functions in `src/lib/books.ts`, covered by `src/test/books.test.ts`; pages only compose them — keeps rules testable without the database.
+- All database access for books goes through `src/lib/books-data.ts` hooks (`useBooks`, `useBookMutations`); swapping the backend touches only that file.
+- Pages wrap their content in `AppShell` (sidebar + header with CSV export) instead of a layout route, so the integration-managed `_authenticated` gate stays untouched.
