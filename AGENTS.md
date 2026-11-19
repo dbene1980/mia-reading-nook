@@ -32,4 +32,5 @@ use the editor.
 ## Project rules
 - Book domain logic (filters, stats, CSV export) lives as pure functions in `src/lib/books.ts`, covered by `src/test/books.test.ts`; pages only compose them — keeps rules testable without the database.
 - All database access for books goes through `src/lib/books-data.ts` hooks (`useBooks`, `useBookMutations`); swapping the backend touches only that file.
-- Pages wrap their content in `AppShell` (sidebar + header with CSV export) instead of a layout route, so the integration-managed `_authenticated` gate stays untouched.
+- Signed-in pages live under `src/routes/_authenticated/` (client-only gate, redirects to `/auth`) and wrap content in `AppShell` (sidebar + header with CSV export and sign-out); the gate stays a bare `<Outlet />`.
+- Backend is the user's own Supabase project; the browser client talks to `books` directly and RLS (`auth.uid() = user_id`) is the only access control, so no server functions are needed for book CRUD.

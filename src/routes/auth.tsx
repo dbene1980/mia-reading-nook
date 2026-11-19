@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Library, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -16,6 +17,11 @@ export const Route = createFileRoute("/auth")({
       { property: "og:description", content: "Accedi alla tua libreria personale." },
     ],
   }),
+  ssr: false,
+  beforeLoad: async () => {
+    const { data } = await supabase.auth.getUser();
+    if (data.user) throw redirect({ to: "/" });
+  },
   component: AuthPage,
 });
 
@@ -23,13 +29,20 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    // TEMPORARY until the user's database is connected.
-    toast.error("L'accesso sarà attivo appena il database è collegato.");
+    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
     setLoading(false);
+    if (error) {
+      toast.error(
+        error.message.includes("Invalid login") ? "Email o password non corretti" : error.message,
+      );
+      return;
+    }
+    navigate({ to: "/", replace: true });
   }
 
   return (

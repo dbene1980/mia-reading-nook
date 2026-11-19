@@ -9,14 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as DaLeggereRouteImport } from './routes/da-leggere'
-import { Route as LibriLettiRouteImport } from './routes/libri-letti'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedDaLeggereRouteImport } from './routes/_authenticated/da-leggere'
+import { Route as AuthenticatedLibriLettiRouteImport } from './routes/_authenticated/libri-letti'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -24,58 +24,68 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DaLeggereRoute = DaLeggereRouteImport.update({
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDaLeggereRoute = AuthenticatedDaLeggereRouteImport.update({
   id: '/da-leggere',
   path: '/da-leggere',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const LibriLettiRoute = LibriLettiRouteImport.update({
+const AuthenticatedLibriLettiRoute = AuthenticatedLibriLettiRouteImport.update({
   id: '/libri-letti',
   path: '/libri-letti',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
-  '/da-leggere': typeof DaLeggereRoute
-  '/libri-letti': typeof LibriLettiRoute
+  '/da-leggere': typeof AuthenticatedDaLeggereRoute
+  '/libri-letti': typeof AuthenticatedLibriLettiRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/da-leggere': typeof DaLeggereRoute
-  '/libri-letti': typeof LibriLettiRoute
+  '/da-leggere': typeof AuthenticatedDaLeggereRoute
+  '/libri-letti': typeof AuthenticatedLibriLettiRoute
+  '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/da-leggere': typeof DaLeggereRoute
-  '/libri-letti': typeof LibriLettiRoute
+  '/_authenticated/da-leggere': typeof AuthenticatedDaLeggereRoute
+  '/_authenticated/libri-letti': typeof AuthenticatedLibriLettiRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths: '/' | '/auth' | '/da-leggere' | '/libri-letti'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/da-leggere' | '/libri-letti'
-  id: '__root__' | '/' | '/auth' | '/da-leggere' | '/libri-letti'
+  to: '/auth' | '/da-leggere' | '/libri-letti' | '/'
+  id:
+    | '__root__'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/da-leggere'
+    | '/_authenticated/libri-letti'
+    | '/_authenticated/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  DaLeggereRoute: typeof DaLeggereRoute
-  LibriLettiRoute: typeof LibriLettiRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -85,28 +95,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/da-leggere': {
-      id: '/da-leggere'
+    '/_authenticated/': {
+      id: '/_authenticated/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/da-leggere': {
+      id: '/_authenticated/da-leggere'
       path: '/da-leggere'
       fullPath: '/da-leggere'
-      preLoaderRoute: typeof DaLeggereRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedDaLeggereRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/libri-letti': {
-      id: '/libri-letti'
+    '/_authenticated/libri-letti': {
+      id: '/_authenticated/libri-letti'
       path: '/libri-letti'
       fullPath: '/libri-letti'
-      preLoaderRoute: typeof LibriLettiRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedLibriLettiRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDaLeggereRoute: typeof AuthenticatedDaLeggereRoute
+  AuthenticatedLibriLettiRoute: typeof AuthenticatedLibriLettiRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDaLeggereRoute: AuthenticatedDaLeggereRoute,
+  AuthenticatedLibriLettiRoute: AuthenticatedLibriLettiRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
-  DaLeggereRoute: DaLeggereRoute,
-  LibriLettiRoute: LibriLettiRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

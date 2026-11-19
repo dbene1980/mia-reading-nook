@@ -22,7 +22,7 @@ import { STATI, filterToRead, type Stato } from "@/lib/books";
 import { useBooks } from "@/lib/books-data";
 import { useBookActions } from "@/lib/use-book-actions";
 
-export const Route = createFileRoute("/da-leggere")({
+export const Route = createFileRoute("/_authenticated/da-leggere")({
   head: () => ({
     meta: [
       { title: "Da leggere · La mia libreria" },

@@ -12,7 +12,7 @@ import { StarRating } from "@/components/library/star-rating";
 import { computeStats, recentActivity } from "@/lib/books";
 import { useBooks } from "@/lib/books-data";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title: "Home · La mia libreria" },

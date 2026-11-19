@@ -1,33 +1,69 @@
-/**
- * Data access for the books table.
- * TEMPORARY: the user's own database is not connected yet, so reads return an empty list
- * and writes fail with a clear message. Replace this module's internals once it is connected;
- * the exported hook signatures are what the pages rely on.
- */
-import type { Book } from "./books";
+/** Data access for the books table (user's own database; RLS limits rows to the signed-in user). */
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 import type { BookFormValues } from "@/components/library/book-form-dialog";
+import { supabase } from "@/integrations/supabase/client";
 
-export const DATABASE_CONNECTED = false;
+import type { Book } from "./books";
 
-export class NotConnectedError extends Error {
-  constructor() {
-    super("Il database non è ancora collegato.");
-  }
-}
+const PAGE = 1000;
+
+export const booksQueryOptions = queryOptions({
+  queryKey: ["books"],
+  queryFn: async (): Promise<Book[]> => {
+    // The API returns at most 1000 rows per request: page through everything.
+    const all: Book[] = [];
+    for (let from = 0; ; from += PAGE) {
+      const { data, error } = await supabase
+        .from("books")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .order("id")
+        .range(from, from + PAGE - 1);
+      if (error) throw error;
+      all.push(...((data ?? []) as Book[]));
+      if (!data || data.length < PAGE) break;
+    }
+    return all;
+  },
+});
 
 export function useBooks(): { books: Book[]; isLoading: boolean } {
-  return { books: [], isLoading: false };
+  const q = useQuery(booksQueryOptions);
+  return { books: q.data ?? [], isLoading: q.isLoading };
 }
 
 export type BookPatch = Partial<BookFormValues> & { letto?: boolean };
 
 export function useBookMutations() {
-  const fail = async (..._args: unknown[]): Promise<never> => {
-    throw new NotConnectedError();
-  };
+  const qc = useQueryClient();
+  const refresh = () => qc.invalidateQueries({ queryKey: booksQueryOptions.queryKey });
+
+  const create = useMutation({
+    mutationFn: async (values: BookFormValues) => {
+      const { error } = await supabase.from("books").insert({ ...values, letto: false });
+      if (error) throw error;
+    },
+    onSuccess: refresh,
+  });
+  const update = useMutation({
+    mutationFn: async ({ id, patch }: { id: string; patch: BookPatch }) => {
+      const { error } = await supabase.from("books").update(patch).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: refresh,
+  });
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("books").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: refresh,
+  });
+
   return {
-    createBook: fail as (values: BookFormValues) => Promise<void>,
-    updateBook: fail as (id: string, patch: BookPatch) => Promise<void>,
-    deleteBook: fail as (id: string) => Promise<void>,
+    createBook: (values: BookFormValues) => create.mutateAsync(values),
+    updateBook: (id: string, patch: BookPatch) => update.mutateAsync({ id, patch }),
+    deleteBook: (id: string) => remove.mutateAsync(id),
   };
 }

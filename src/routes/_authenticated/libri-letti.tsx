@@ -20,7 +20,7 @@ import { TIPI, TIPO_LABEL, filterRead, type Tipo } from "@/lib/books";
 import { useBooks } from "@/lib/books-data";
 import { useBookActions } from "@/lib/use-book-actions";
 
-export const Route = createFileRoute("/libri-letti")({
+export const Route = createFileRoute("/_authenticated/libri-letti")({
   head: () => ({
     meta: [
       { title: "Libri letti · La mia libreria" },
