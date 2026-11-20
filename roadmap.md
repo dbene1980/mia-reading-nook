@@ -4,7 +4,7 @@
 - [x] Componenti UI (schede, finestre modifica, "Segna come letto", sidebar, export CSV)
 - [x] Scelta database: Supabase proprio dell'utente
 - [x] Pagine Home, Da leggere, Libri letti (interfaccia)
-- [ ] Collegare pagine e login ai dati reali — in attesa: collegamento Supabase
-- [ ] Importare i CSV dell'utente nella tabella books (CSV ricevuti: 33 da leggere, 410 letti; in attesa: collegamento Supabase)
-- [ ] Utente collega il proprio progetto Supabase (Impostazioni → External Supabase) — in attesa
-- [ ] Creare account dbene1980@gmail.com e disattivare iscrizioni — in attesa: collegamento Supabase
+- [x] Pagine e login collegati ai dati reali
+- [x] Importati i CSV: 442 libri (33 da leggere, 409 letti)
+- [x] Supabase collegato
+- [x] Account creato; [ ] utente deve disattivare "Allow new users to sign up" in Supabase (verifica non possibile da qui)
