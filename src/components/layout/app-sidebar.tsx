@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { BookMarked, BookOpenCheck, Home, Library } from "lucide-react";
+import { Library } from "lucide-react";
 
 import {
   Sidebar,
@@ -14,11 +14,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-const items = [
-  { title: "Home", url: "/", icon: Home },
-  { title: "Da leggere", url: "/da-leggere", icon: BookMarked },
-  { title: "Libri letti", url: "/libri-letti", icon: BookOpenCheck },
-] as const;
+import { NAV_ITEMS as items } from "./nav-items";
 
 export function AppSidebar() {
   const { state, setOpenMobile } = useSidebar();

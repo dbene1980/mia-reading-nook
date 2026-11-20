@@ -79,7 +79,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "La mia libreria" },
       { name: "description", content: "La tua libreria personale: libri da leggere, letti e statistiche." },
       { property: "og:title", content: "La mia libreria" },
@@ -138,7 +138,11 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
-      <Toaster theme="dark" position="bottom-right" />
+      <Toaster
+        theme="dark"
+        position="bottom-right"
+        mobileOffset={{ bottom: "calc(5.5rem + env(safe-area-inset-bottom))" }}
+      />
     </QueryClientProvider>
   );
 }
