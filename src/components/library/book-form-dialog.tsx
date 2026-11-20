@@ -31,6 +31,7 @@ import {
 } from "@/lib/books";
 
 import { BookCover } from "./book-cover";
+import { GoogleBooksSearch } from "./google-books-search";
 import { StarRating } from "./star-rating";
 
 export interface BookFormValues {
@@ -134,6 +135,17 @@ export function BookFormDialog({
             </DialogDescription>
           </DialogHeader>
 
+          {!book && (
+            <GoogleBooksSearch
+              onPick={(r) => {
+                setTitolo(r.titolo);
+                setAutore(r.autore ?? "");
+                setDescrizione(r.descrizione ?? "");
+                setCover(r.copertina_url ?? "");
+              }}
+            />
+          )}
+
           {book && !isRead && onMarkRead && (
             <Button
               type="button"
@@ -147,14 +159,13 @@ export function BookFormDialog({
           )}
 
           <div className="grid gap-5 sm:grid-cols-[120px_1fr]">
-            <BookCover url={emptyToNull(cover)} titolo={titolo || "Copertina"} className="hidden w-full sm:flex" />
+            <BookCover key={cover} url={emptyToNull(cover)} titolo={titolo || "Copertina"} className="hidden w-full sm:flex" />
             <div className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="titolo">Titolo *</Label>
                 <Input
                   id="titolo"
                   required
-                  autoFocus={!book}
                   value={titolo}
                   onChange={(e) => setTitolo(e.target.value)}
                 />

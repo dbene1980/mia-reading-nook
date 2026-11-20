@@ -34,3 +34,4 @@ use the editor.
 - All database access for books goes through `src/lib/books-data.ts` hooks (`useBooks`, `useBookMutations`); swapping the backend touches only that file.
 - Signed-in pages live under `src/routes/_authenticated/` (client-only gate, redirects to `/auth`) and wrap content in `AppShell` (sidebar + header with CSV export and sign-out); the gate stays a bare `<Outlet />`.
 - Backend is the user's own Supabase project; the browser client talks to `books` directly and RLS (`auth.uid() = user_id`) is the only access control, so no server functions are needed for book CRUD.
+- Google Books lookup is called straight from the browser (public, keyless API; optional `VITE_GOOGLE_BOOKS_API_KEY`), with response parsing as pure functions in `src/lib/google-books.ts` covered by `src/test/google-books.test.ts` — no server hop needed for public data.
