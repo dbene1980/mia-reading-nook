@@ -61,7 +61,17 @@ export function useBookMutations() {
     onSuccess: refresh,
   });
 
+  /** Saves only the cover and patches the cached list in place (no full refetch: used in bulk). */
+  async function setCover(id: string, url: string | null) {
+    const { error } = await supabase.from("books").update({ copertina_url: url }).eq("id", id);
+    if (error) throw error;
+    qc.setQueryData<Book[]>(booksQueryOptions.queryKey, (prev) =>
+      prev?.map((b) => (b.id === id ? { ...b, copertina_url: url } : b)),
+    );
+  }
+
   return {
+    setCover,
     createBook: (values: BookFormValues) => create.mutateAsync(values),
     updateBook: (id: string, patch: BookPatch) => update.mutateAsync({ id, patch }),
     deleteBook: (id: string) => remove.mutateAsync(id),

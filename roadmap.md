@@ -10,3 +10,4 @@
 - [x] Account creato; [ ] utente deve disattivare "Allow new users to sign up" in Supabase (verifica non possibile da qui)
 - [x] Barra di navigazione in basso su telefono (con pulsante +)
 - [x] Ricerca libri: Open Library come ripiego se Google Books è sovraccarico; ricerca solo con "Cerca"/Invio
+- [ ] Copertine ovunque (2:3, segnaposto colorato), ricerca copertina nella scheda libro, recupero copertine mancanti in blocco

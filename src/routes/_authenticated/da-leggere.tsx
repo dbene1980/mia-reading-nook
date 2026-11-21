@@ -6,6 +6,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { BookCard } from "@/components/library/book-card";
 import { BookFormDialog } from "@/components/library/book-form-dialog";
 import { EmptyState } from "@/components/library/empty-state";
+import { MissingCoversButton } from "@/components/library/missing-covers-button";
 import { MarkReadDialog } from "@/components/library/mark-read-dialog";
 import { PageHeader } from "@/components/library/page-header";
 import { Button } from "@/components/ui/button";
@@ -40,7 +41,8 @@ function ToReadPage() {
   const [query, setQuery] = useState("");
   const [stato, setStato] = useState<Stato | "ALL">("ALL");
   const list = useMemo(() => filterToRead(books, { query, stato }), [books, query, stato]);
-  const total = books.filter((b) => !b.letto).length;
+  const scope = useMemo(() => books.filter((b) => !b.letto), [books]);
+  const total = scope.length;
 
   return (
     <AppShell>
@@ -49,9 +51,12 @@ function ToReadPage() {
           eyebrow={`${total} in attesa`}
           title="Da leggere"
           actions={
-            <Button onClick={actions.openNew}>
-              <Plus /> Aggiungi libro
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <MissingCoversButton books={scope} />
+              <Button onClick={actions.openNew}>
+                <Plus /> Aggiungi libro
+              </Button>
+            </div>
           }
         />
 
@@ -107,6 +112,7 @@ function ToReadPage() {
         book={actions.editing}
         onSave={actions.save}
         onDelete={actions.remove}
+        onSaveCover={actions.saveCover}
         onMarkRead={actions.startMarkRead}
       />
       <MarkReadDialog

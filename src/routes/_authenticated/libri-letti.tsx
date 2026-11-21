@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { BookFormDialog } from "@/components/library/book-form-dialog";
 import { EmptyState } from "@/components/library/empty-state";
+import { MissingCoversButton } from "@/components/library/missing-covers-button";
 import { PageHeader } from "@/components/library/page-header";
 import { ReadBookRow } from "@/components/library/read-book-row";
 import { Input } from "@/components/ui/input";
@@ -42,12 +43,17 @@ function ReadPage() {
     () => filterRead(books, { query, tipo, rating: rating === "ALL" ? "ALL" : Number(rating) }),
     [books, query, tipo, rating],
   );
-  const total = books.filter((b) => b.letto).length;
+  const scope = useMemo(() => books.filter((b) => b.letto), [books]);
+  const total = scope.length;
 
   return (
     <AppShell>
       <div className="grid gap-8">
-        <PageHeader eyebrow={`${total} completati`} title="Libri letti" />
+        <PageHeader
+          eyebrow={`${total} completati`}
+          title="Libri letti"
+          actions={<MissingCoversButton books={scope} />}
+        />
 
         <div className="flex flex-col gap-3 sm:flex-row">
           <div className="relative flex-1">
@@ -120,6 +126,7 @@ function ReadPage() {
         book={actions.editing}
         onSave={actions.save}
         onDelete={actions.remove}
+        onSaveCover={actions.saveCover}
       />
     </AppShell>
   );

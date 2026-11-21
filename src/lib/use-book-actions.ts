@@ -12,7 +12,7 @@ function errorMessage(e: unknown) {
 
 /** Dialog state + save handlers shared by the library pages. */
 export function useBookActions() {
-  const { createBook, updateBook, deleteBook } = useBookMutations();
+  const { createBook, updateBook, deleteBook, setCover } = useBookMutations();
   const [editing, setEditing] = useState<Book | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [marking, setMarking] = useState<Book | null>(null);
@@ -38,6 +38,14 @@ export function useBookActions() {
         else await createBook(values);
         toast.success(editing ? "Modifiche salvate" : "Libro aggiunto");
         setFormOpen(false);
+      } catch (e) {
+        toast.error(errorMessage(e));
+      }
+    },
+    async saveCover(book: Book, url: string) {
+      try {
+        await setCover(book.id, url);
+        toast.success("Copertina salvata");
       } catch (e) {
         toast.error(errorMessage(e));
       }

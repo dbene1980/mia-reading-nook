@@ -73,7 +73,7 @@ function HomePage() {
                   style={{ animationDelay: `${i * 60}ms` }}
                   className="flex animate-rise gap-3 rounded-xl border border-border bg-card p-3 shadow-card"
                 >
-                  <BookCover url={book.copertina_url} titolo={book.titolo} className="w-14" />
+                  <BookCover url={book.copertina_url} titolo={book.titolo} autore={book.autore} className="w-14" />
                   <div className="flex min-w-0 flex-col gap-1">
                     <span
                       className={

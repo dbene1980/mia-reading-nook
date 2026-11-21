@@ -51,3 +51,61 @@ export async function searchOpenLibrary(query: string, signal?: AbortSignal) {
   if (!res.ok) throw new Error(`Ricerca non riuscita (errore ${res.status}).`);
   return parseOpenLibraryResponse(await res.json());
 }
+
+/* ---------- Cover lookup by title + author ---------- */
+
+export interface CoverCandidate {
+  coverId: number;
+  url: string;
+  titolo: string;
+  autore: string | null;
+}
+
+export class OpenLibraryRateLimitError extends Error {
+  constructor() {
+    super("Open Library ha ricevuto troppe richieste: riprova tra poco.");
+    this.name = "OpenLibraryRateLimitError";
+  }
+}
+
+export function buildOpenLibraryCoverSearchUrl(titolo: string, autore?: string | null) {
+  const params = new URLSearchParams({ title: titolo.trim() });
+  const a = autore?.trim();
+  if (a) params.set("author", a);
+  params.set("limit", String(OPEN_LIBRARY_MAX_RESULTS));
+  params.set("fields", "key,title,author_name,cover_i");
+  return `https://openlibrary.org/search.json?${params.toString()}`;
+}
+
+/** Only results that actually have a cover, without duplicates, in Open Library's order. */
+export function parseCoverCandidates(json: unknown): CoverCandidate[] {
+  const docs = (json as { docs?: RawDoc[] } | null)?.docs;
+  if (!Array.isArray(docs)) return [];
+  const seen = new Set<number>();
+  const out: CoverCandidate[] = [];
+  for (const doc of docs) {
+    if (!doc.cover_i || seen.has(doc.cover_i)) continue;
+    seen.add(doc.cover_i);
+    out.push({
+      coverId: doc.cover_i,
+      url: openLibraryCoverUrl(doc.cover_i) as string,
+      titolo: doc.title?.trim() ?? "",
+      autore: doc.author_name?.[0]?.trim() || null,
+    });
+  }
+  return out;
+}
+
+async function fetchCoverCandidates(url: string, signal?: AbortSignal) {
+  const res = await fetch(url, { signal: signal ?? null });
+  if (res.status === 429) throw new OpenLibraryRateLimitError();
+  if (!res.ok) throw new Error(`Ricerca copertina non riuscita (errore ${res.status}).`);
+  return parseCoverCandidates(await res.json());
+}
+
+/** Search by title + author; if nothing has a cover, retry with the title alone. */
+export async function searchCovers(titolo: string, autore?: string | null, signal?: AbortSignal) {
+  const withAuthor = await fetchCoverCandidates(buildOpenLibraryCoverSearchUrl(titolo, autore), signal);
+  if (withAuthor.length > 0 || !autore?.trim()) return withAuthor;
+  return fetchCoverCandidates(buildOpenLibraryCoverSearchUrl(titolo), signal);
+}

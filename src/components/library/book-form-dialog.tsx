@@ -31,6 +31,7 @@ import {
 } from "@/lib/books";
 
 import { BookCover } from "./book-cover";
+import { CoverPicker } from "./cover-picker";
 import { GoogleBooksSearch } from "./google-books-search";
 import { StarRating } from "./star-rating";
 
@@ -54,6 +55,8 @@ interface BookFormDialogProps {
   onSave: (values: BookFormValues) => Promise<void> | void;
   onDelete?: (book: Book) => Promise<void> | void;
   onMarkRead?: (book: Book) => void;
+  /** Save a cover picked from the automatic search right away (existing books only). */
+  onSaveCover?: (book: Book, url: string) => Promise<void> | void;
 }
 
 const NONE = "__none__";
@@ -70,6 +73,7 @@ export function BookFormDialog({
   onSave,
   onDelete,
   onMarkRead,
+  onSaveCover,
 }: BookFormDialogProps) {
   const [titolo, setTitolo] = useState("");
   const [autore, setAutore] = useState("");
@@ -158,8 +162,13 @@ export function BookFormDialog({
             </Button>
           )}
 
-          <div className="grid gap-5 sm:grid-cols-[120px_1fr]">
-            <BookCover key={cover} url={emptyToNull(cover)} titolo={titolo || "Copertina"} className="hidden w-full sm:flex" />
+          <div className="grid grid-cols-[88px_minmax(0,1fr)] gap-4 sm:grid-cols-[128px_minmax(0,1fr)] sm:gap-5">
+            <BookCover
+              url={emptyToNull(cover)}
+              titolo={titolo || "Senza titolo"}
+              autore={emptyToNull(autore)}
+              className="w-full self-start"
+            />
             <div className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="titolo">Titolo *</Label>
@@ -229,16 +238,13 @@ export function BookFormDialog({
             </div>
           )}
 
-          <div className="grid gap-2">
-            <Label htmlFor="copertina">Link copertina</Label>
-            <Input
-              id="copertina"
-              type="url"
-              placeholder="https://…"
-              value={cover}
-              onChange={(e) => setCover(e.target.value)}
-            />
-          </div>
+          <CoverPicker
+            titolo={titolo}
+            autore={autore}
+            value={cover}
+            onChange={setCover}
+            {...(book && onSaveCover ? { onPick: (url: string) => void onSaveCover(book, url) } : {})}
+          />
           <div className="grid gap-2">
             <Label htmlFor="descrizione">Descrizione</Label>
             <Textarea
