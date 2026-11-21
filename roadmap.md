@@ -8,3 +8,5 @@
 - [x] Importati i CSV: 442 libri (33 da leggere, 409 letti)
 - [x] Supabase collegato
 - [x] Account creato; [ ] utente deve disattivare "Allow new users to sign up" in Supabase (verifica non possibile da qui)
+- [x] Barra di navigazione in basso su telefono (con pulsante +)
+- [x] Ricerca libri: Open Library come ripiego se Google Books è sovraccarico; ricerca solo con "Cerca"/Invio

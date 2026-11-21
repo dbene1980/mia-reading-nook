@@ -3,7 +3,8 @@ import { useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { searchGoogleBooks, type GoogleBookResult } from "@/lib/google-books";
+import { searchBooks, type BookSearchSource } from "@/lib/book-search";
+import type { GoogleBookResult } from "@/lib/google-books";
 
 interface GoogleBooksSearchProps {
   onPick: (result: GoogleBookResult) => void;
@@ -15,6 +16,7 @@ export function GoogleBooksSearch({ onPick }: GoogleBooksSearchProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pickedId, setPickedId] = useState<string | null>(null);
+  const [source, setSource] = useState<BookSearchSource | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   async function run() {
@@ -27,7 +29,9 @@ export function GoogleBooksSearch({ onPick }: GoogleBooksSearchProps) {
     setError(null);
     setPickedId(null);
     try {
-      setResults(await searchGoogleBooks(q, ctrl.signal));
+      const out = await searchBooks(q, ctrl.signal);
+      setResults(out.results);
+      setSource(out.source);
     } catch (e) {
       if ((e as Error).name === "AbortError") return;
       setResults(null);
@@ -41,8 +45,8 @@ export function GoogleBooksSearch({ onPick }: GoogleBooksSearchProps) {
     <div className="grid gap-3 rounded-lg border border-border bg-muted/40 p-3">
       <div className="flex gap-2">
         <Input
-          aria-label="Cerca su Google Books"
-          placeholder="Cerca un titolo su Google Books…"
+          aria-label="Cerca un libro"
+          placeholder="Cerca un titolo e premi Cerca…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => {
@@ -61,6 +65,12 @@ export function GoogleBooksSearch({ onPick }: GoogleBooksSearchProps) {
 
       {results && results.length === 0 && !loading && (
         <p className="text-sm text-muted-foreground">Nessun risultato trovato.</p>
+      )}
+
+      {results && results.length > 0 && (
+        <p className="text-xs text-muted-foreground">
+          Risultati da {source === "openlibrary" ? "Open Library" : "Google Books"}
+        </p>
       )}
 
       {results && results.length > 0 && (
