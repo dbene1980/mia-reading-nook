@@ -5,6 +5,11 @@ import {
   computeStats,
   filterRead,
   filterToRead,
+  moveId,
+  nextPosition,
+  positionUpdates,
+  readingStats,
+  readingYears,
   recentActivity,
   type Book,
 } from "@/lib/books";
@@ -23,6 +28,8 @@ function book(p: Partial<Book>): Book {
     rating: null,
     tipo: null,
     copertina_url: null,
+    posizione: 0,
+    pagine: null,
     created_at: "2026-01-01T10:00:00Z",
     updated_at: "2026-01-01T10:00:00Z",
     ...p,
@@ -106,5 +113,84 @@ describe("CSV export", () => {
   it("escapes commas and quotes", () => {
     const csv = booksToCsv([book({ id: "x", titolo: 'Il "nome", della rosa' })]);
     expect(csv.split("\r\n")[1]).toContain('"Il ""nome"", della rosa"');
+  });
+});
+
+describe("Priorità Da leggere", () => {
+  it("orders unread books by posizione ascending", () => {
+    const res = filterToRead(
+      [book({ id: "c", posizione: 3 }), book({ id: "a", posizione: 1 }), book({ id: "b", posizione: 2 })],
+      { query: "", stato: "ALL" },
+    );
+    expect(res.map((b) => b.id)).toEqual(["a", "b", "c"]);
+  });
+
+  it("filters by the new COMPRATO stato", () => {
+    const res = filterToRead(
+      [book({ id: "a", stato: "COMPRATO" }), book({ id: "b", stato: "DA COMPRARE" })],
+      { query: "", stato: "COMPRATO" },
+    );
+    expect(res.map((b) => b.id)).toEqual(["a"]);
+  });
+
+  it("saves only the positions that changed after a drag", () => {
+    const books = [
+      book({ id: "a", posizione: 1 }),
+      book({ id: "b", posizione: 2 }),
+      book({ id: "c", posizione: 3 }),
+    ];
+    const order = moveId(["a", "b", "c"], "c", "a");
+    expect(order).toEqual(["c", "a", "b"]);
+    expect(positionUpdates(books, order)).toEqual([
+      { id: "c", posizione: 1 },
+      { id: "a", posizione: 2 },
+      { id: "b", posizione: 3 },
+    ]);
+    expect(positionUpdates(books, moveId(["a", "b", "c"], "b", "c"))).toEqual([
+      { id: "c", posizione: 2 },
+      { id: "b", posizione: 3 },
+    ]);
+  });
+
+  it("puts a new book after the existing unread ones", () => {
+    expect(
+      nextPosition([book({ posizione: 4 }), book({ posizione: 9, letto: true }), book({ posizione: 2 })]),
+    ).toBe(5);
+  });
+});
+
+describe("Statistiche", () => {
+  const now = new Date("2026-06-15T12:00:00Z");
+  const books = [
+    book({ letto: true, data_fine_libro: "2026-01-10T10:00:00Z", rating: 5, tipo: "LIBRO" }),
+    book({ letto: true, data_fine_libro: "2026-01-20T10:00:00Z", rating: 3, tipo: "EBOOK" }),
+    book({ letto: true, data_fine_libro: "2026-03-05T10:00:00Z", rating: 4, tipo: "LIBRO" }),
+    book({ letto: true, data_fine_libro: "2025-07-05T10:00:00Z", rating: 1, tipo: "AUDIOLIBRO" }),
+    book({ letto: false, tipo: "LIBRO" }),
+  ];
+
+  it("computes KPIs for the chosen year with previous-year comparison", () => {
+    const s = readingStats(books, 2026, now);
+    expect(s.total).toBe(3);
+    expect(s.previousYearTotal).toBe(1);
+    expect(s.avgPerMonth).toBe(0.5); // 3 books over Jan-Jun
+    expect(s.avgRating).toBe(4);
+    expect(s.favoriteFormat).toBe("LIBRO");
+    expect(s.formats.find((f) => f.tipo === "LIBRO")?.pct).toBe(67);
+    expect(s.byMonth.map((m) => m.libri).slice(0, 4)).toEqual([2, 0, 1, 0]);
+    expect(s.byRating.map((r) => r.count)).toEqual([0, 0, 1, 1, 1]);
+  });
+
+  it("uses 12 months for a past year and all books for 'Tutti gli anni'", () => {
+    expect(readingStats(books, 2025, now).avgPerMonth).toBe(0.1);
+    const all = readingStats(books, "ALL", now);
+    expect(all.total).toBe(4);
+    expect(all.previousYearTotal).toBeNull();
+    expect(all.avgPerMonth).toBe(0.3); // 4 books from Jul 2025 to Jun 2026 = 12 months
+  });
+
+  it("lists years with finished books plus the current one, newest first", () => {
+    expect(readingYears(books, now)).toEqual([2026, 2025]);
+    expect(readingYears([], now)).toEqual([2026]);
   });
 });

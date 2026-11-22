@@ -59,7 +59,7 @@ export function CoverPicker({ titolo, autore, value, onChange, onPick }: CoverPi
             onClick={() => void run()}
             disabled={loading || !titolo.trim()}
           >
-            {loading ? <Loader2 className="animate-spin" /> : <Sparkles />} Cerca copertina automatica
+            {loading ? <Loader2 className="animate-spin" /> : <Sparkles />} Cerca copertina
           </Button>
         </div>
       </div>

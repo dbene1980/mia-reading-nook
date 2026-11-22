@@ -3,8 +3,9 @@ import { toast } from "sonner";
 
 import type { BookFormValues } from "@/components/library/book-form-dialog";
 import type { MarkReadValues } from "@/components/library/mark-read-dialog";
-import type { Book } from "./books";
-import { useBookMutations } from "./books-data";
+import { nextPosition, positionUpdates, type Book } from "./books";
+import { booksQueryOptions, useBookMutations } from "./books-data";
+import { useQueryClient } from "@tanstack/react-query";
 
 function errorMessage(e: unknown) {
   return e instanceof Error ? e.message : "Operazione non riuscita";
@@ -12,7 +13,8 @@ function errorMessage(e: unknown) {
 
 /** Dialog state + save handlers shared by the library pages. */
 export function useBookActions() {
-  const { createBook, updateBook, deleteBook, setCover } = useBookMutations();
+  const { createBook, updateBook, deleteBook, setCover, savePositions } = useBookMutations();
+  const qc = useQueryClient();
   const [editing, setEditing] = useState<Book | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [marking, setMarking] = useState<Book | null>(null);
@@ -70,9 +72,17 @@ export function useBookActions() {
         toast.error(errorMessage(e));
       }
     },
+    async reorder(books: Book[], orderedIds: string[]) {
+      try {
+        await savePositions(positionUpdates(books, orderedIds));
+      } catch (e) {
+        toast.error(`Ordine non salvato: ${errorMessage(e)}`);
+      }
+    },
     async markUnread(book: Book) {
       try {
-        await updateBook(book.id, { letto: false });
+        const all = qc.getQueryData<Book[]>(booksQueryOptions.queryKey) ?? [];
+        await updateBook(book.id, { letto: false, posizione: nextPosition(all) });
         toast.success(`"${book.titolo}" riportato in Da leggere`);
       } catch (e) {
         toast.error(errorMessage(e));

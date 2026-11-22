@@ -43,6 +43,7 @@ export interface BookFormValues {
   descrizione: string | null;
   note: string | null;
   copertina_url: string | null;
+  pagine: number | null;
   rating: number | null;
   data_fine_libro: string | null;
 }
@@ -66,6 +67,11 @@ function emptyToNull(s: string) {
   return t ? t : null;
 }
 
+function parsePagine(s: string) {
+  const n = Number.parseInt(s, 10);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
 export function BookFormDialog({
   open,
   onOpenChange,
@@ -82,6 +88,7 @@ export function BookFormDialog({
   const [descrizione, setDescrizione] = useState("");
   const [note, setNote] = useState("");
   const [cover, setCover] = useState("");
+  const [pagine, setPagine] = useState("");
   const [rating, setRating] = useState<number | null>(null);
   const [dataFine, setDataFine] = useState("");
   const [saving, setSaving] = useState(false);
@@ -95,6 +102,7 @@ export function BookFormDialog({
     setDescrizione(book?.descrizione ?? "");
     setNote(book?.note ?? "");
     setCover(book?.copertina_url ?? "");
+    setPagine(book?.pagine ? String(book.pagine) : "");
     setRating(book?.rating ?? null);
     setDataFine(book?.data_fine_libro ? toLocalInputValue(new Date(book.data_fine_libro)) : "");
   }, [open, book]);
@@ -114,6 +122,7 @@ export function BookFormDialog({
         descrizione: emptyToNull(descrizione),
         note: emptyToNull(note),
         copertina_url: emptyToNull(cover),
+        pagine: parsePagine(pagine),
         rating: isRead ? rating : (book?.rating ?? null),
         data_fine_libro: isRead
           ? dataFine
@@ -216,6 +225,19 @@ export function BookFormDialog({
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
+              <div className="grid gap-2 sm:max-w-[calc(50%-0.375rem)]">
+                <Label htmlFor="pagine">Numero di pagine</Label>
+                <Input
+                  id="pagine"
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  step={1}
+                  value={pagine}
+                  onChange={(e) => setPagine(e.target.value)}
+                  placeholder="Es. 320"
+                />
               </div>
             </div>
           </div>

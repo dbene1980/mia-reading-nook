@@ -40,14 +40,14 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
 /** Fixed bottom navigation shown only below the md breakpoint (768px). */
 export function MobileBottomNav({ onAdd }: { onAdd: () => void }) {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
-  const [home, toRead, read] = NAV_ITEMS;
+  const [home, toRead, read, stats] = NAV_ITEMS;
 
   return (
     <nav
       aria-label="Navigazione principale"
       className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-sidebar/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
     >
-      <div className="mx-auto flex h-16 max-w-md items-stretch px-2">
+      <div className="mx-auto flex h-16 max-w-md items-stretch px-1">
         <NavLink item={home} active={pathname === home.url} />
         <NavLink item={toRead} active={pathname === toRead.url} />
         <div className="flex flex-1 items-center justify-center">
@@ -61,6 +61,7 @@ export function MobileBottomNav({ onAdd }: { onAdd: () => void }) {
           </button>
         </div>
         <NavLink item={read} active={pathname === read.url} />
+        <NavLink item={stats} active={pathname === stats.url} />
       </div>
     </nav>
   );

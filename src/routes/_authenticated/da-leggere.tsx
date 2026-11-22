@@ -1,14 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Plus, Search } from "lucide-react";
+import { GripVertical, Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { AppShell } from "@/components/layout/app-shell";
-import { BookCard } from "@/components/library/book-card";
 import { BookFormDialog } from "@/components/library/book-form-dialog";
 import { EmptyState } from "@/components/library/empty-state";
 import { MissingCoversButton } from "@/components/library/missing-covers-button";
 import { MarkReadDialog } from "@/components/library/mark-read-dialog";
 import { PageHeader } from "@/components/library/page-header";
+import { SortableBookList } from "@/components/library/sortable-book-list";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_authenticated/da-leggere")({
   head: () => ({
     meta: [
       { title: "Da leggere · La mia libreria" },
-      { name: "description", content: "I libri che ti aspettano, con ricerca e filtri per stato." },
+      { name: "description", content: "I libri che ti aspettano, in ordine di priorità, con ricerca e filtri." },
       { property: "og:title", content: "Da leggere · La mia libreria" },
       { property: "og:description", content: "I libri che ti aspettano, con ricerca e filtri per stato." },
     ],
@@ -43,6 +43,7 @@ function ToReadPage() {
   const list = useMemo(() => filterToRead(books, { query, stato }), [books, query, stato]);
   const scope = useMemo(() => books.filter((b) => !b.letto), [books]);
   const total = scope.length;
+  const canReorder = !query.trim() && stato === "ALL";
 
   return (
     <AppShell>
@@ -98,10 +99,19 @@ function ToReadPage() {
               : "Prova a cambiare la ricerca o il filtro."}
           </EmptyState>
         ) : (
-          <div className="grid gap-3 md:grid-cols-2">
-            {list.map((b, i) => (
-              <BookCard key={b.id} book={b} index={i} onOpen={actions.openEdit} />
-            ))}
+          <div className="grid gap-3">
+            <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <GripVertical className="size-3.5" />
+              {canReorder
+                ? "Trascina la maniglia a destra per cambiare la priorità: l'ordine si salva subito."
+                : "Togli ricerca e filtro per riordinare i libri."}
+            </p>
+            <SortableBookList
+              books={list}
+              onOpen={actions.openEdit}
+              enabled={canReorder}
+              onReorder={(ids) => void actions.reorder(scope, ids)}
+            />
           </div>
         )}
       </div>

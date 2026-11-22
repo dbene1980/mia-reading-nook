@@ -15,6 +15,7 @@ const badgeVariants = cva(
           "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
         outline: "text-foreground",
         scaricato: "border-status-scaricato/30 bg-status-scaricato/12 text-status-scaricato",
+        comprato: "border-status-comprato/30 bg-status-comprato/12 text-status-comprato",
         dascaricare: "border-status-dascaricare/30 bg-status-dascaricare/12 text-status-dascaricare",
         dacomprare: "border-status-dacomprare/30 bg-status-dacomprare/12 text-status-dacomprare",
         nontrovato: "border-status-nontrovato/30 bg-status-nontrovato/12 text-status-nontrovato",

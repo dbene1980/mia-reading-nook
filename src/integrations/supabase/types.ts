@@ -24,6 +24,8 @@ export type Database = {
           id: string
           letto: boolean
           note: string | null
+          pagine: number | null
+          posizione: number
           rating: number | null
           stato: string | null
           tipo: string | null
@@ -40,6 +42,8 @@ export type Database = {
           id?: string
           letto?: boolean
           note?: string | null
+          pagine?: number | null
+          posizione?: number
           rating?: number | null
           stato?: string | null
           tipo?: string | null
@@ -56,6 +60,8 @@ export type Database = {
           id?: string
           letto?: boolean
           note?: string | null
+          pagine?: number | null
+          posizione?: number
           rating?: number | null
           stato?: string | null
           tipo?: string | null

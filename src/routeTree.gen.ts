@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedDaLeggereRouteImport } from './routes/_authenticated/da-leggere'
 import { Route as AuthenticatedLibriLettiRouteImport } from './routes/_authenticated/libri-letti'
+import { Route as AuthenticatedStatisticheRouteImport } from './routes/_authenticated/statistiche'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -39,17 +40,25 @@ const AuthenticatedLibriLettiRoute = AuthenticatedLibriLettiRouteImport.update({
   path: '/libri-letti',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedStatisticheRoute =
+  AuthenticatedStatisticheRouteImport.update({
+    id: '/statistiche',
+    path: '/statistiche',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/da-leggere': typeof AuthenticatedDaLeggereRoute
   '/libri-letti': typeof AuthenticatedLibriLettiRoute
+  '/statistiche': typeof AuthenticatedStatisticheRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/da-leggere': typeof AuthenticatedDaLeggereRoute
   '/libri-letti': typeof AuthenticatedLibriLettiRoute
+  '/statistiche': typeof AuthenticatedStatisticheRoute
   '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesById {
@@ -58,19 +67,21 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/da-leggere': typeof AuthenticatedDaLeggereRoute
   '/_authenticated/libri-letti': typeof AuthenticatedLibriLettiRoute
+  '/_authenticated/statistiche': typeof AuthenticatedStatisticheRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/da-leggere' | '/libri-letti'
+  fullPaths: '/' | '/auth' | '/da-leggere' | '/libri-letti' | '/statistiche'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/da-leggere' | '/libri-letti' | '/'
+  to: '/auth' | '/da-leggere' | '/libri-letti' | '/statistiche' | '/'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/da-leggere'
     | '/_authenticated/libri-letti'
+    | '/_authenticated/statistiche'
     | '/_authenticated/'
   fileRoutesById: FileRoutesById
 }
@@ -116,18 +127,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLibriLettiRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/statistiche': {
+      id: '/_authenticated/statistiche'
+      path: '/statistiche'
+      fullPath: '/statistiche'
+      preLoaderRoute: typeof AuthenticatedStatisticheRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDaLeggereRoute: typeof AuthenticatedDaLeggereRoute
   AuthenticatedLibriLettiRoute: typeof AuthenticatedLibriLettiRoute
+  AuthenticatedStatisticheRoute: typeof AuthenticatedStatisticheRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDaLeggereRoute: AuthenticatedDaLeggereRoute,
   AuthenticatedLibriLettiRoute: AuthenticatedLibriLettiRoute,
+  AuthenticatedStatisticheRoute: AuthenticatedStatisticheRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }
 

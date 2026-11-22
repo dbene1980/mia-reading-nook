@@ -36,3 +36,6 @@ use the editor.
 - Backend is the user's own Supabase project; the browser client talks to `books` directly and RLS (`auth.uid() = user_id`) is the only access control, so no server functions are needed for book CRUD.
 - Book lookup in the add dialog tries Google Books, then falls back to Open Library on any Google failure (rate limits are common without a key); both are public keyless APIs called from the browser, with parsing in `src/lib/google-books.ts` / `src/lib/open-library.ts` and the fallback in `src/lib/book-search.ts`, covered by tests in `src/test/`.
 - Mobile (<768px) hides the sidebar and uses a fixed bottom bar with a quick-add button, both fed by `src/components/layout/nav-items.ts`; page content keeps bottom padding so the bar never covers it.
+- "Da leggere" order is the `posizione` column (ascending); drag-and-drop uses @dnd-kit sortable with a handle, saves only changed rows via `savePositions`, and is disabled while search/filter is active so positions always refer to the full list; new or un-read books go to the end.
+- Reading statistics (`readingStats`, `readingYears`) are pure functions in `src/lib/books.ts` based on `letto = true` and `data_fine_libro`; the Statistiche page only renders them.
+

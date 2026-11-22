@@ -64,6 +64,7 @@
 
   /* Status badge colors */
   --color-status-scaricato: var(--status-scaricato);
+  --color-status-comprato: var(--status-comprato);
   --color-status-dascaricare: var(--status-dascaricare);
   --color-status-dacomprare: var(--status-dacomprare);
   --color-status-nontrovato: var(--status-nontrovato);
@@ -96,6 +97,7 @@
   --ring: oklch(0.78 0.12 75);
 
   --status-scaricato: oklch(0.7 0.13 150);
+  --status-comprato: oklch(0.74 0.1 185);
   --status-dascaricare: oklch(0.72 0.11 230);
   --status-dacomprare: oklch(0.78 0.12 75);
   --status-nontrovato: oklch(0.66 0.16 25);
