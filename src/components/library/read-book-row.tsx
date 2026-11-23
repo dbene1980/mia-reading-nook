@@ -20,9 +20,9 @@ export function ReadBookRow({ book, onEdit, onUnread, index = 0 }: ReadBookRowPr
   return (
     <article
       style={{ animationDelay: `${Math.min(index, 12) * 30}ms` }}
-      className="flex animate-rise gap-4 rounded-xl border border-border bg-card p-3 shadow-card sm:p-4"
+      className="flex animate-rise gap-4 ink-card p-3 shadow-card sm:p-4"
     >
-      <BookCover url={book.copertina_url} titolo={book.titolo} autore={book.autore} className="w-16 sm:w-20" />
+      <BookCover url={book.copertina_url} titolo={book.titolo} autore={book.autore} className="w-16 sm:w-20" read />
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="min-w-0">

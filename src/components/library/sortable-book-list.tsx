@@ -49,7 +49,7 @@ function SortableItem({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={cn("relative", isDragging && "z-10 opacity-90 [&>div]:border-primary/60 [&>div]:shadow-lift")}
+      className={cn("relative", isDragging && "z-10 opacity-90 [&>div]:border-primary [&>div]:shadow-lift")}
     >
       <BookCard
         book={book}
@@ -63,7 +63,7 @@ function SortableItem({
               {...attributes}
               {...listeners}
               aria-label={`Trascina per spostare "${book.titolo}"`}
-              className="flex w-9 shrink-0 cursor-grab touch-none items-center justify-center rounded-r-xl border-l border-border/60 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-primary active:cursor-grabbing focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="flex w-9 shrink-0 cursor-grab touch-none items-center justify-center rounded-r-[var(--radius)] border-l-[1.5px] border-line/60 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-gold active:cursor-grabbing focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             >
               <GripVertical className="size-5" />
             </button>

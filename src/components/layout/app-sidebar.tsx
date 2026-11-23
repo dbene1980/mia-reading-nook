@@ -1,5 +1,4 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Library } from "lucide-react";
 
 import {
   Sidebar,
@@ -13,6 +12,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { BrandLogo } from "@/components/brand/brand-logo";
+import { FourPointStar } from "@/components/brand/ornaments";
 
 import { NAV_ITEMS as items } from "./nav-items";
 
@@ -25,12 +26,13 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="px-3 py-5">
         <Link to="/" className="flex items-center gap-2.5" onClick={() => setOpenMobile(false)}>
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Library className="size-4" />
-          </span>
+          <BrandLogo className={collapsed ? "size-8" : "size-11"} />
           {!collapsed && (
-            <span className="font-display text-lg leading-none text-sidebar-accent-foreground">
-              La mia libreria
+            <span className="grid gap-1 leading-none">
+              <span className="font-display text-base font-semibold tracking-wide text-sidebar-accent-foreground">
+                La Libreria
+              </span>
+              <span className="text-[11px] font-semibold uppercase tracking-[0.24em] text-gold">di Daniele</span>
             </span>
           )}
         </Link>
@@ -45,7 +47,7 @@ export function AppSidebar() {
                     asChild
                     isActive={pathname === item.url}
                     tooltip={item.title}
-                    className="h-10 data-[active=true]:text-primary"
+                    className="h-10 rounded-[3px] border-l-2 border-transparent data-[active=true]:border-primary data-[active=true]:font-semibold data-[active=true]:text-gold"
                   >
                     <Link to={item.url} onClick={() => setOpenMobile(false)}>
                       <item.icon />
@@ -60,8 +62,9 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter className="px-3 pb-4">
         {!collapsed && (
-          <p className="text-xs leading-relaxed text-sidebar-foreground/50">
-            Ogni libro letto è una stanza in più.
+          <p className="flex items-start gap-2 text-xs leading-relaxed text-sidebar-foreground/60">
+            <FourPointStar className="mt-0.5 size-2.5 shrink-0 text-primary" />
+            Ogni libro letto è un tatuaggio sull'anima.
           </p>
         )}
       </SidebarFooter>

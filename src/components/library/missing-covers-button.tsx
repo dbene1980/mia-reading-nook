@@ -65,7 +65,7 @@ export function MissingCoversButton({ books }: { books: Book[] }) {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="font-display text-2xl">Recupero copertine</DialogTitle>
+            <DialogTitle className="font-display text-2xl font-semibold tracking-wide">Recupero copertine</DialogTitle>
             <DialogDescription>
               Cerco su Open Library la prima copertina per titolo e autore e la salvo nella tua libreria.
             </DialogDescription>
@@ -77,15 +77,15 @@ export function MissingCoversButton({ books }: { books: Book[] }) {
               {progress?.processed ?? 0} di {progress?.total ?? missing} libri · {pct}%
             </p>
             <div className="grid grid-cols-3 gap-2 text-center text-xs">
-              <div className="rounded-lg border border-border bg-muted/40 p-2">
+              <div className="rounded-[var(--radius)] border-[1.5px] border-line bg-background/40 p-2">
                 <p className="font-display text-xl text-success tabular-nums">{progress?.found ?? 0}</p>
                 trovate
               </div>
-              <div className="rounded-lg border border-border bg-muted/40 p-2">
+              <div className="rounded-[var(--radius)] border-[1.5px] border-line bg-background/40 p-2">
                 <p className="font-display text-xl tabular-nums">{progress?.notFound ?? 0}</p>
                 non trovate
               </div>
-              <div className="rounded-lg border border-border bg-muted/40 p-2">
+              <div className="rounded-[var(--radius)] border-[1.5px] border-line bg-background/40 p-2">
                 <p className="font-display text-xl text-destructive tabular-nums">{progress?.failed ?? 0}</p>
                 errori
               </div>

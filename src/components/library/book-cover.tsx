@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
 
+import { FourPointStar } from "@/components/brand/ornaments";
 import { cn } from "@/lib/utils";
+
+import { ReadStamp } from "./read-stamp";
 
 interface BookCoverProps {
   url: string | null;
   titolo: string;
   autore?: string | null;
   className?: string;
+  /** Show the "LETTO" stamp (finished books). */
+  read?: boolean;
 }
 
 const PALETTE = ["--chart-1", "--chart-2", "--chart-3", "--chart-4", "--chart-5"] as const;
@@ -18,7 +23,9 @@ function paletteFor(titolo: string) {
   return PALETTE[h % PALETTE.length] as string;
 }
 
-export function BookCover({ url, titolo, autore, className }: BookCoverProps) {
+const CORNERS = ["left-[3%] top-[2%]", "right-[3%] top-[2%]", "left-[3%] bottom-[2%]", "right-[3%] bottom-[2%]"];
+
+export function BookCover({ url, titolo, autore, className, read }: BookCoverProps) {
   const [broken, setBroken] = useState(false);
   useEffect(() => setBroken(false), [url]);
   const src = url?.trim();
@@ -28,7 +35,7 @@ export function BookCover({ url, titolo, autore, className }: BookCoverProps) {
   return (
     <div
       className={cn(
-        "@container relative aspect-[2/3] shrink-0 overflow-hidden rounded-md border border-border/60 shadow-card",
+        "@container relative aspect-[2/3] shrink-0 overflow-hidden rounded-[3px] border-[1.5px] border-line shadow-card",
         className,
       )}
     >
@@ -44,25 +51,32 @@ export function BookCover({ url, titolo, autore, className }: BookCoverProps) {
         <div
           role="img"
           aria-label={`Copertina non disponibile: ${titolo}`}
-          className="flex h-full w-full flex-col justify-between p-[8%]"
+          className="relative flex h-full w-full items-center justify-center"
           style={{
-            backgroundImage: `linear-gradient(160deg, color-mix(in oklab, ${tone} 42%, var(--card)), color-mix(in oklab, ${tone} 14%, var(--background)))`,
+            backgroundImage: `linear-gradient(165deg, color-mix(in oklab, ${tone} 18%, var(--card)), var(--background))`,
           }}
         >
-          <span className="h-px w-1/3 bg-foreground/30" />
-          <div className="grid gap-[0.35em] text-center">
-            <span className="line-clamp-4 font-display text-[8px] font-medium leading-tight text-foreground/90 @[4.5rem]:text-[10px] @[7rem]:text-sm @[10rem]:text-lg">
+          {/* fine-line tattoo frame */}
+          <span aria-hidden className="absolute inset-[7%] border border-gold/70" />
+          <span aria-hidden className="absolute inset-[11%] border border-dotted border-gold/45" />
+          {CORNERS.map((pos) => (
+            <FourPointStar key={pos} className={cn("absolute size-[14cqw] text-gold", pos)} />
+          ))}
+          <div className="relative grid w-[72%] justify-items-center gap-[0.4em] text-center">
+            <FourPointStar className="size-[12cqw] text-primary" />
+            <span className="line-clamp-4 font-display text-[8px] font-semibold leading-tight text-foreground @[4.5rem]:text-[10px] @[7rem]:text-sm @[10rem]:text-lg">
               {titolo}
             </span>
+            <span aria-hidden className="h-px w-1/2 bg-gold/60" />
             {autore && (
-              <span className="line-clamp-2 text-[6px] uppercase tracking-wider text-foreground/60 @[4.5rem]:text-[8px] @[7rem]:text-[10px] @[10rem]:text-xs">
+              <span className="line-clamp-2 text-[6px] uppercase tracking-wider text-foreground/70 @[4.5rem]:text-[8px] @[7rem]:text-[10px] @[10rem]:text-xs">
                 {autore}
               </span>
             )}
           </div>
-          <span className="ml-auto h-px w-1/3 bg-foreground/30" />
         </div>
       )}
+      {read && <ReadStamp />}
     </div>
   );
 }

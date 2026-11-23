@@ -24,9 +24,9 @@ import { useBookActions } from "@/lib/use-book-actions";
 export const Route = createFileRoute("/_authenticated/libri-letti")({
   head: () => ({
     meta: [
-      { title: "Libri letti · La mia libreria" },
+      { title: "Libri letti · La Libreria di Daniele" },
       { name: "description", content: "Tutti i libri che hai finito, con voto, tipo e note." },
-      { property: "og:title", content: "Libri letti · La mia libreria" },
+      { property: "og:title", content: "Libri letti · La Libreria di Daniele" },
       { property: "og:description", content: "Tutti i libri che hai finito, con voto, tipo e note." },
     ],
   }),
@@ -96,7 +96,7 @@ function ReadPage() {
         {isLoading ? (
           <div className="grid gap-3">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-28 rounded-xl" />
+              <Skeleton key={i} className="h-28 rounded-[var(--radius)]" />
             ))}
           </div>
         ) : list.length === 0 ? (

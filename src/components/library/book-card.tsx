@@ -17,7 +17,7 @@ export function BookCard({ book, onOpen, index = 0, handle }: BookCardProps) {
   return (
     <div
       style={{ animationDelay: `${Math.min(index, 12) * 30}ms` }}
-      className="group flex animate-rise items-stretch rounded-xl border border-border bg-card shadow-card transition-all hover:border-primary/40 hover:shadow-lift"
+      className="group flex animate-rise items-stretch ink-card shadow-card transition-all hover:border-gold hover:shadow-lift"
     >
       <button
         type="button"

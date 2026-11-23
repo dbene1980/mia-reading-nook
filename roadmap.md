@@ -14,3 +14,4 @@
 - [x] Colonne posizione e pagine; stato COMPRATO; campo "Numero di pagine"
 - [x] Priorità con trascinamento in "Da leggere" (salvata subito)
 - [x] Pagina Statistiche (anno, 4 schede, grafico mensile, stelle e formati)
+- [x] Nuova identità "La Libreria di Daniele" (stile tattoo Dark Ink, icona, favicon, icona Home telefono)

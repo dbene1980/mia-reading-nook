@@ -1,8 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Library, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { BrandLogo } from "@/components/brand/brand-logo";
 import { BookFormDialog } from "@/components/library/book-form-dialog";
 import { Button } from "@/components/ui/button";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -31,13 +32,13 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         <SidebarInset className="bg-transparent">
-          <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-3 border-b border-border/60 bg-background/80 px-4 backdrop-blur sm:px-6">
+          <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-3 border-b-[1.5px] border-line/60 bg-background/85 px-4 backdrop-blur sm:px-6">
             <SidebarTrigger className="hidden md:inline-flex" />
             <Link to="/" className="flex min-w-0 items-center gap-2 md:hidden">
-              <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Library className="size-3.5" />
+              <BrandLogo className="size-8" />
+              <span className="truncate font-display text-sm font-semibold leading-none tracking-wide">
+                La Libreria di Daniele
               </span>
-              <span className="truncate font-display text-base leading-none">La mia libreria</span>
             </Link>
             <div className="flex shrink-0 items-center gap-1">
               <ExportCsvButton books={books} />

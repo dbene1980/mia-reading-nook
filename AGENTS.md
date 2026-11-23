@@ -39,3 +39,5 @@ use the editor.
 - "Da leggere" order is the `posizione` column (ascending); drag-and-drop uses @dnd-kit sortable with a handle, saves only changed rows via `savePositions`, and is disabled while search/filter is active so positions always refer to the full list; new or un-read books go to the end.
 - Reading statistics (`readingStats`, `readingYears`) are pure functions in `src/lib/books.ts` based on `letto = true` and `data_fine_libro`; the Statistiche page only renders them.
 
+- Brand marks (logo, Ex Libris seal, star ornaments) live in `src/components/brand/`; the single source icon is `public/icon.svg`, and favicon/PWA PNGs are rendered from it with `rsvg-convert` — redraw once, regenerate the rest.
+- Home-screen install is manifest-only (`public/manifest.webmanifest` + head links in `__root.tsx`); no service worker, since offline was not requested.

@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center rounded-[3px] border-[1.5px] px-2 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
     variants: {
       variant: {
@@ -14,12 +14,13 @@ const badgeVariants = cva(
         destructive:
           "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
         outline: "text-foreground",
-        scaricato: "border-status-scaricato/30 bg-status-scaricato/12 text-status-scaricato",
-        comprato: "border-status-comprato/30 bg-status-comprato/12 text-status-comprato",
-        dascaricare: "border-status-dascaricare/30 bg-status-dascaricare/12 text-status-dascaricare",
-        dacomprare: "border-status-dacomprare/30 bg-status-dacomprare/12 text-status-dacomprare",
-        nontrovato: "border-status-nontrovato/30 bg-status-nontrovato/12 text-status-nontrovato",
-        tipo: "border-border bg-muted text-muted-foreground font-medium tracking-wide",
+        // Stato: rubber-stamp look — sharp colored outline, uppercase, spaced letters.
+        scaricato: "border-status-scaricato bg-status-scaricato/8 text-status-scaricato uppercase",
+        comprato: "border-status-comprato bg-status-comprato/8 text-status-comprato uppercase",
+        dascaricare: "border-status-dascaricare bg-status-dascaricare/8 text-status-dascaricare uppercase",
+        dacomprare: "border-status-dacomprare bg-status-dacomprare/8 text-status-dacomprare uppercase",
+        nontrovato: "border-status-nontrovato bg-status-nontrovato/8 text-status-nontrovato uppercase",
+        tipo: "border-line bg-transparent text-foreground/80 font-medium tracking-wide",
       },
     },
     defaultVariants: {

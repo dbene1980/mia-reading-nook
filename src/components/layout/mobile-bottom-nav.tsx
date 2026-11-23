@@ -14,7 +14,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
       aria-current={active ? "page" : undefined}
       className={cn(
         "relative flex flex-1 flex-col items-center justify-center gap-1 py-2 text-[11px] font-medium transition-colors",
-        active ? "text-primary" : "text-muted-foreground hover:text-foreground",
+        active ? "font-semibold text-gold" : "text-muted-foreground hover:text-foreground",
       )}
     >
       <span
@@ -26,8 +26,8 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
       />
       <span
         className={cn(
-          "flex h-7 w-12 items-center justify-center rounded-full transition-colors",
-          active && "bg-primary/15",
+          "flex h-7 w-12 items-center justify-center rounded-[3px] border-[1.5px] border-transparent transition-colors",
+          active && "border-gold/50 bg-primary/15",
         )}
       >
         <item.icon className="size-5" strokeWidth={active ? 2.4 : 2} />
@@ -45,7 +45,7 @@ export function MobileBottomNav({ onAdd }: { onAdd: () => void }) {
   return (
     <nav
       aria-label="Navigazione principale"
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-sidebar/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 border-t-[1.5px] border-line/70 bg-sidebar/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
     >
       <div className="mx-auto flex h-16 max-w-md items-stretch px-1">
         <NavLink item={home} active={pathname === home.url} />
@@ -55,7 +55,7 @@ export function MobileBottomNav({ onAdd }: { onAdd: () => void }) {
             type="button"
             onClick={onAdd}
             aria-label="Aggiungi libro"
-            className="-mt-6 flex size-14 items-center justify-center rounded-full border-4 border-background bg-primary text-primary-foreground shadow-lift transition-transform active:scale-95"
+            className="-mt-6 flex size-14 items-center justify-center rounded-full border-[3px] border-gold bg-primary ring-4 ring-background text-primary-foreground shadow-lift transition-transform active:scale-95"
           >
             <Plus className="size-6" strokeWidth={2.5} />
           </button>

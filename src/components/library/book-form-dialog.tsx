@@ -140,7 +140,7 @@ export function BookFormDialog({
       <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-2xl">
         <form onSubmit={submit} className="grid gap-5">
           <DialogHeader>
-            <DialogTitle className="font-display text-2xl">
+            <DialogTitle className="font-display text-2xl font-semibold tracking-wide">
               {book ? "Dettagli libro" : "Nuovo libro"}
             </DialogTitle>
             <DialogDescription>
@@ -177,6 +177,7 @@ export function BookFormDialog({
               titolo={titolo || "Senza titolo"}
               autore={emptyToNull(autore)}
               className="w-full self-start"
+              read={isRead}
             />
             <div className="grid gap-4">
               <div className="grid gap-2">
@@ -243,7 +244,7 @@ export function BookFormDialog({
           </div>
 
           {isRead && (
-            <div className="grid gap-4 rounded-lg border border-border bg-muted/40 p-4 sm:grid-cols-2">
+            <div className="grid gap-4 rounded-[var(--radius)] border-[1.5px] border-line bg-background/40 p-4 sm:grid-cols-2">
               <div className="grid gap-2">
                 <Label htmlFor="data_fine_edit">Data fine lettura</Label>
                 <Input

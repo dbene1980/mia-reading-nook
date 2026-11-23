@@ -42,7 +42,7 @@ export function GoogleBooksSearch({ onPick }: GoogleBooksSearchProps) {
   }
 
   return (
-    <div className="grid gap-3 rounded-lg border border-border bg-muted/40 p-3">
+    <div className="grid gap-3 rounded-[var(--radius)] border-[1.5px] border-line bg-background/40 p-3">
       <div className="flex gap-2">
         <Input
           aria-label="Cerca un libro"

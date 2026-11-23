@@ -1,8 +1,10 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { Library, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { BrandLogo } from "@/components/brand/brand-logo";
+import { OrnamentRule } from "@/components/brand/ornaments";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,10 +13,10 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Accedi · La mia libreria" },
-      { name: "description", content: "Accedi alla tua libreria personale." },
-      { property: "og:title", content: "Accedi · La mia libreria" },
-      { property: "og:description", content: "Accedi alla tua libreria personale." },
+      { title: "Accedi · La Libreria di Daniele" },
+      { name: "description", content: "Accedi alla Libreria di Daniele." },
+      { property: "og:title", content: "Accedi · La Libreria di Daniele" },
+      { property: "og:description", content: "Accedi alla Libreria di Daniele." },
     ],
   }),
   ssr: false,
@@ -49,15 +51,15 @@ function AuthPage() {
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm animate-rise">
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
-          <span className="flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lift">
-            <Library className="size-6" />
-          </span>
-          <h1 className="text-3xl font-medium">La mia libreria</h1>
+          <BrandLogo className="size-24" />
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold">Ex Libris</p>
+          <h1 className="text-3xl">La Libreria di Daniele</h1>
+          <OrnamentRule className="w-48" />
           <p className="text-sm text-muted-foreground">Accedi per vedere i tuoi libri.</p>
         </div>
         <form
           onSubmit={submit}
-          className="grid gap-4 rounded-2xl border border-border bg-card p-6 shadow-lift"
+          className="grid gap-4 ink-card p-6 shadow-lift"
         >
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>

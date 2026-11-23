@@ -9,21 +9,24 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design system — "Biblioteca notturna": warm ink background, parchment text,
- * brass accent, serif display headings. The app is dark-only.
+ * Design system — "Dark Ink" (Traditional Tattoo & Fine Line): ink-black background,
+ * warm charcoal cards, ivory paper text, vermilion primary (buttons, stars), antique
+ * gold details. Crisp 1.5px flash-sheet outlines, small radii, hard offset shadows.
+ * Cinzel for main headings, Bitter for book titles, Inter for body text. Dark-only.
  */
 
 @theme inline {
-  --font-display: "Fraunces", Georgia, serif;
-  --font-sans: "Manrope", system-ui, sans-serif;
+  --font-display: "Cinzel", "Times New Roman", serif;
+  --font-serif: "Bitter", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+  --radius-xl: calc(var(--radius) + 2px);
+  --radius-2xl: calc(var(--radius) + 4px);
+  --radius-3xl: calc(var(--radius) + 6px);
+  --radius-4xl: calc(var(--radius) + 8px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -42,6 +45,9 @@
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
+  --color-line: var(--line);
   --color-star: var(--star);
   --color-surface: var(--surface);
   --color-border: var(--border);
@@ -62,7 +68,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Status badge colors */
+  /* Status stamp colors */
   --color-status-scaricato: var(--status-scaricato);
   --color-status-comprato: var(--status-comprato);
   --color-status-dascaricare: var(--status-dascaricare);
@@ -71,65 +77,73 @@
 }
 
 :root {
-  --radius: 0.75rem;
-  --background: oklch(0.17 0.012 60);
-  --surface: oklch(0.2 0.013 60);
-  --foreground: oklch(0.93 0.02 80);
-  --card: oklch(0.215 0.014 60);
-  --card-foreground: oklch(0.93 0.02 80);
-  --popover: oklch(0.22 0.014 60);
-  --popover-foreground: oklch(0.93 0.02 80);
-  --primary: oklch(0.78 0.12 75);
-  --primary-foreground: oklch(0.18 0.02 60);
-  --secondary: oklch(0.27 0.015 60);
-  --secondary-foreground: oklch(0.9 0.02 80);
-  --muted: oklch(0.25 0.012 60);
-  --muted-foreground: oklch(0.68 0.02 75);
-  --accent: oklch(0.29 0.02 65);
-  --accent-foreground: oklch(0.93 0.02 80);
-  --destructive: oklch(0.63 0.2 27);
-  --destructive-foreground: oklch(0.97 0.01 80);
-  --success: oklch(0.66 0.15 150);
-  --success-foreground: oklch(0.15 0.03 150);
-  --star: oklch(0.83 0.15 85);
-  --border: oklch(0.3 0.014 60);
-  --input: oklch(0.32 0.014 60);
-  --ring: oklch(0.78 0.12 75);
+  --radius: 0.25rem;
+  /* #0F0E0E ink black */
+  --background: oklch(0.165 0.002 17.3);
+  --surface: oklch(0.19 0.004 40);
+  /* #F5EFE6 ivory paper */
+  --foreground: oklch(0.954 0.014 78.3);
+  /* #1C1917 warm charcoal */
+  --card: oklch(0.216 0.006 56);
+  --card-foreground: oklch(0.954 0.014 78.3);
+  --popover: oklch(0.216 0.006 56);
+  --popover-foreground: oklch(0.954 0.014 78.3);
+  /* #C83E37 vermilion */
+  --primary: oklch(0.564 0.176 27.2);
+  --primary-foreground: oklch(0.975 0.01 78);
+  /* #D4A359 antique gold */
+  --gold: oklch(0.746 0.109 76.1);
+  --gold-foreground: oklch(0.165 0.002 17.3);
+  --secondary: oklch(0.26 0.007 50);
+  --secondary-foreground: oklch(0.93 0.014 78);
+  --muted: oklch(0.245 0.006 50);
+  --muted-foreground: oklch(0.74 0.018 75);
+  --accent: oklch(0.28 0.01 55);
+  --accent-foreground: oklch(0.954 0.014 78.3);
+  --destructive: oklch(0.62 0.2 22);
+  --destructive-foreground: oklch(0.975 0.01 78);
+  --success: oklch(0.64 0.13 150);
+  --success-foreground: oklch(0.15 0.02 150);
+  --star: oklch(0.564 0.176 27.2);
+  /* flash-sheet outline: faded ivory / bronze */
+  --line: oklch(0.5 0.045 68);
+  --border: oklch(0.34 0.02 65);
+  --input: oklch(0.42 0.03 68);
+  --ring: oklch(0.746 0.109 76.1);
 
-  --status-scaricato: oklch(0.7 0.13 150);
-  --status-comprato: oklch(0.74 0.1 185);
-  --status-dascaricare: oklch(0.72 0.11 230);
-  --status-dacomprare: oklch(0.78 0.12 75);
-  --status-nontrovato: oklch(0.66 0.16 25);
+  --status-scaricato: oklch(0.74 0.1 150);
+  --status-comprato: oklch(0.746 0.109 76.1);
+  --status-dascaricare: oklch(0.75 0.08 220);
+  --status-dacomprare: oklch(0.86 0.03 78);
+  --status-nontrovato: oklch(0.68 0.17 28);
 
-  --chart-1: oklch(0.78 0.12 75);
-  --chart-2: oklch(0.66 0.15 150);
-  --chart-3: oklch(0.72 0.11 230);
-  --chart-4: oklch(0.66 0.16 25);
-  --chart-5: oklch(0.7 0.08 300);
-  --sidebar: oklch(0.145 0.011 60);
-  --sidebar-foreground: oklch(0.86 0.02 80);
-  --sidebar-primary: oklch(0.78 0.12 75);
-  --sidebar-primary-foreground: oklch(0.18 0.02 60);
-  --sidebar-accent: oklch(0.23 0.016 62);
-  --sidebar-accent-foreground: oklch(0.95 0.02 80);
-  --sidebar-border: oklch(0.26 0.013 60);
-  --sidebar-ring: oklch(0.78 0.12 75);
+  --chart-1: oklch(0.564 0.176 27.2);
+  --chart-2: oklch(0.746 0.109 76.1);
+  --chart-3: oklch(0.6 0.06 220);
+  --chart-4: oklch(0.58 0.08 150);
+  --chart-5: oklch(0.6 0.095 64.7);
+  --sidebar: oklch(0.145 0.002 17);
+  --sidebar-foreground: oklch(0.88 0.014 78);
+  --sidebar-primary: oklch(0.564 0.176 27.2);
+  --sidebar-primary-foreground: oklch(0.975 0.01 78);
+  --sidebar-accent: oklch(0.22 0.008 45);
+  --sidebar-accent-foreground: oklch(0.954 0.014 78.3);
+  --sidebar-border: oklch(0.34 0.02 65);
+  --sidebar-ring: oklch(0.746 0.109 76.1);
 
   --gradient-glow: radial-gradient(
-    ellipse 80% 60% at 70% -10%,
-    color-mix(in oklab, var(--primary) 16%, transparent),
+    ellipse 70% 50% at 85% -10%,
+    color-mix(in oklab, var(--primary) 12%, transparent),
     transparent 70%
   );
   --gradient-cover: linear-gradient(
     150deg,
-    color-mix(in oklab, var(--primary) 35%, var(--card)),
+    color-mix(in oklab, var(--primary) 30%, var(--card)),
     var(--muted) 70%
   );
-  --shadow-card: 0 1px 0 0 color-mix(in oklab, var(--foreground) 5%, transparent) inset,
-    0 12px 30px -18px oklch(0 0 0 / 0.7);
-  --shadow-lift: 0 1px 0 0 color-mix(in oklab, var(--foreground) 8%, transparent) inset,
-    0 22px 40px -20px oklch(0 0 0 / 0.85);
+  /* hard offset shadows, like ink printed on a flash sheet */
+  --shadow-card: 3px 3px 0 0 oklch(0 0 0 / 0.55);
+  --shadow-lift: 5px 5px 0 0 color-mix(in oklab, var(--primary) 45%, transparent);
 }
 
 @layer base {
@@ -151,11 +165,29 @@
   }
 
   h1,
-  h2,
-  h3 {
+  h2 {
     font-family: var(--font-display);
-    letter-spacing: -0.01em;
+    font-weight: 600;
+    letter-spacing: 0.02em;
   }
+
+  h3 {
+    font-family: var(--font-serif);
+    letter-spacing: 0;
+  }
+}
+
+/* Flash-sheet box: crisp 1.5px outline on warm charcoal. */
+@utility ink-card {
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  background-color: var(--card);
+}
+
+/* Stamp outline for badges and seals. */
+@utility ink-stamp {
+  border: 1.5px solid currentColor;
+  border-radius: 3px;
 }
 
 @utility shadow-card {

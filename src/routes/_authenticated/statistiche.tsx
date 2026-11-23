@@ -19,7 +19,7 @@ import { TIPO_LABEL, readingStats, readingYears, type YearFilter } from "@/lib/b
 import { useBooks } from "@/lib/books-data";
 import { cn } from "@/lib/utils";
 
-const TITLE = "Statistiche · La mia libreria";
+const TITLE = "Statistiche · La Libreria di Daniele";
 const DESCRIPTION = "Quanti libri leggi al mese, voti medi, formati preferiti e andamento dell'anno.";
 
 export const Route = createFileRoute("/_authenticated/statistiche")({
@@ -74,7 +74,7 @@ function StatsPage() {
         {isLoading ? (
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-36 rounded-2xl" />
+              <Skeleton key={i} className="h-36 rounded-[var(--radius)]" />
             ))}
           </div>
         ) : (
@@ -131,7 +131,7 @@ function StatsPage() {
               </EmptyState>
             ) : (
               <>
-                <section className="grid gap-4 rounded-2xl border border-border bg-card p-4 shadow-card sm:p-6">
+                <section className="grid gap-4 ink-card p-4 shadow-card sm:p-6">
                   <div>
                     <h2 className="text-xl">Libri letti per mese</h2>
                     <p className="text-sm text-muted-foreground">
@@ -144,13 +144,13 @@ function StatsPage() {
                       <XAxis dataKey="mese" tickLine={false} axisLine={false} interval={0} fontSize={11} />
                       <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={40} />
                       <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-                      <Bar dataKey="libri" fill="var(--color-libri)" radius={[6, 6, 0, 0]} maxBarSize={36} />
+                      <Bar dataKey="libri" fill="var(--color-libri)" radius={[2, 2, 0, 0]} maxBarSize={36} />
                     </BarChart>
                   </ChartContainer>
                 </section>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  <section className="grid content-start gap-4 rounded-2xl border border-border bg-card p-4 shadow-card sm:p-6">
+                  <section className="grid content-start gap-4 ink-card p-4 shadow-card sm:p-6">
                     <h2 className="text-xl">Per numero di stelle</h2>
                     <div className="grid gap-2.5">
                       {[...s.byRating].reverse().map((r) => (
@@ -174,7 +174,7 @@ function StatsPage() {
                     </p>
                   </section>
 
-                  <section className="grid content-start gap-4 rounded-2xl border border-border bg-card p-4 shadow-card sm:p-6">
+                  <section className="grid content-start gap-4 ink-card p-4 shadow-card sm:p-6">
                     <h2 className="text-xl">Per formato</h2>
                     <div className="grid gap-2.5">
                       {s.formats.map((f) => (
@@ -184,7 +184,7 @@ function StatsPage() {
                           count={f.count}
                           ratio={f.pct / 100}
                           extra={`${f.pct}%`}
-                          barClass="bg-primary"
+                          barClass="bg-gold"
                         />
                       ))}
                     </div>
@@ -219,12 +219,12 @@ function Kpi({
   return (
     <div
       style={{ animationDelay: `${index * 60}ms` }}
-      className="flex animate-rise flex-col rounded-2xl border border-border bg-card p-4 shadow-card sm:p-5"
+      className="flex animate-rise flex-col ink-card p-4 shadow-card sm:p-5"
     >
-      <Icon className="size-5 text-primary" />
+      <Icon className="size-5 text-gold" />
       <p
         className={cn(
-          "mt-4 font-display font-medium tabular-nums",
+          "mt-4 font-display font-semibold tabular-nums",
           small ? "text-2xl sm:text-3xl" : "text-3xl sm:text-4xl",
         )}
       >
@@ -253,8 +253,8 @@ function DistributionRow({
   return (
     <div className="grid grid-cols-[6.5rem_minmax(0,1fr)_4.5rem] items-center gap-3">
       {label}
-      <div className="h-2 overflow-hidden rounded-full bg-muted">
-        <div className={cn("h-full rounded-full transition-all", barClass)} style={{ width: `${ratio * 100}%` }} />
+      <div className="h-2 overflow-hidden rounded-[2px] border border-line/40 bg-background">
+        <div className={cn("h-full transition-all", barClass)} style={{ width: `${ratio * 100}%` }} />
       </div>
       <span className="text-right text-xs tabular-nums text-muted-foreground">
         {count}

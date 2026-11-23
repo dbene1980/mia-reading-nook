@@ -68,7 +68,7 @@ export function MarkReadDialog({ book, open, onOpenChange, onConfirm }: MarkRead
       <DialogContent className="sm:max-w-md">
         <form onSubmit={submit} className="grid gap-5">
           <DialogHeader>
-            <DialogTitle className="font-display text-xl">Libro terminato</DialogTitle>
+            <DialogTitle className="font-display text-xl font-semibold tracking-wide">Libro terminato</DialogTitle>
             <DialogDescription className="line-clamp-2">{book?.titolo}</DialogDescription>
           </DialogHeader>
 
