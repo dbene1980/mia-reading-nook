@@ -10,10 +10,14 @@ interface RawDoc {
   author_name?: string[];
   cover_i?: number;
   first_sentence?: string[] | string;
+  number_of_pages_median?: number;
 }
 
-export function openLibraryCoverUrl(coverId: number | undefined | null): string | null {
-  return coverId ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg` : null;
+export function openLibraryCoverUrl(
+  coverId: number | undefined | null,
+  size: "M" | "L" = "M",
+): string | null {
+  return coverId ? `https://covers.openlibrary.org/b/id/${coverId}-${size}.jpg` : null;
 }
 
 export function buildOpenLibraryUrl(query: string) {
@@ -108,4 +112,50 @@ export async function searchCovers(titolo: string, autore?: string | null, signa
   const withAuthor = await fetchCoverCandidates(buildOpenLibraryCoverSearchUrl(titolo, autore), signal);
   if (withAuthor.length > 0 || !autore?.trim()) return withAuthor;
   return fetchCoverCandidates(buildOpenLibraryCoverSearchUrl(titolo), signal);
+}
+
+/* ---------- Data completion (author, pages, first sentence, large cover) ---------- */
+
+export interface OpenLibraryDetails {
+  titolo: string;
+  autore: string | null;
+  descrizione: string | null;
+  pagine: number | null;
+  copertina_url: string | null;
+}
+
+export function buildOpenLibraryDetailsUrl(titolo: string, autore?: string | null) {
+  const params = new URLSearchParams({ title: titolo.trim() });
+  const a = autore?.trim();
+  if (a) params.set("author", a);
+  params.set("limit", String(OPEN_LIBRARY_MAX_RESULTS));
+  params.set("fields", "key,title,author_name,cover_i,first_sentence,number_of_pages_median");
+  return `https://openlibrary.org/search.json?${params.toString()}`;
+}
+
+export function parseOpenLibraryDetails(json: unknown): OpenLibraryDetails[] {
+  const docs = (json as { docs?: RawDoc[] } | null)?.docs;
+  if (!Array.isArray(docs)) return [];
+  const out: OpenLibraryDetails[] = [];
+  for (const doc of docs) {
+    const titolo = doc.title?.trim();
+    if (!titolo) continue;
+    const sentence = Array.isArray(doc.first_sentence) ? doc.first_sentence[0] : doc.first_sentence;
+    const pages = doc.number_of_pages_median;
+    out.push({
+      titolo,
+      autore: doc.author_name?.[0]?.trim() || null,
+      descrizione: sentence?.trim() || null,
+      pagine: typeof pages === "number" && pages > 0 ? Math.round(pages) : null,
+      copertina_url: openLibraryCoverUrl(doc.cover_i, "L"),
+    });
+  }
+  return out;
+}
+
+export async function searchOpenLibraryDetails(titolo: string, autore?: string | null, signal?: AbortSignal) {
+  const res = await fetch(buildOpenLibraryDetailsUrl(titolo, autore), { signal: signal ?? null });
+  if (res.status === 429) throw new OpenLibraryRateLimitError();
+  if (!res.ok) throw new Error(`Open Library non risponde (errore ${res.status}).`);
+  return parseOpenLibraryDetails(await res.json());
 }

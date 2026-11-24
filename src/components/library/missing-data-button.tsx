@@ -1,4 +1,4 @@
-import { ImageDown, Loader2 } from "lucide-react";
+import { Loader2, WandSparkles } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -12,34 +12,46 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
+import {
+  booksMissingData,
+  fillMissingData,
+  isRateLimitError,
+  lookupMissingData,
+  type EnrichProgress,
+} from "@/lib/book-enrich";
 import type { Book } from "@/lib/books";
 import { useBookMutations } from "@/lib/books-data";
-import { booksMissingCover, fetchMissingCovers, type CoverFetchProgress } from "@/lib/cover-fetch";
-import { OpenLibraryRateLimitError, searchCovers } from "@/lib/open-library";
 
-/** Scans the given books without a cover and saves the first Open Library match for each. */
-export function MissingCoversButton({ books }: { books: Book[] }) {
-  const { setCover } = useBookMutations();
+/** Pause between books: Apple Books allows roughly 20 searches a minute. */
+const DELAY_MS = 3000;
+
+/** Bulk "Completa dati mancanti": fills only empty author/description/pages/cover fields. */
+export function MissingDataButton({ books }: { books: Book[] }) {
+  const { fillEmptyFields } = useBookMutations();
   const [open, setOpen] = useState(false);
   const [running, setRunning] = useState(false);
-  const [progress, setProgress] = useState<CoverFetchProgress | null>(null);
+  const [progress, setProgress] = useState<EnrichProgress | null>(null);
   const abortRef = useRef<AbortController | null>(null);
-  const missing = booksMissingCover(books).length;
+  const missing = booksMissingData(books).length;
 
   async function start() {
     const ctrl = new AbortController();
     abortRef.current = ctrl;
     setOpen(true);
     setRunning(true);
-    const result = await fetchMissingCovers(books, {
+    const result = await fillMissingData(books, {
       signal: ctrl.signal,
-      find: async (b, signal) => (await searchCovers(b.titolo, b.autore, signal))[0]?.url ?? null,
-      save: (b, url) => setCover(b.id, url),
+      find: (b, signal) => lookupMissingData(b, signal),
+      save: (b, patch) => fillEmptyFields(b.id, patch),
       onProgress: setProgress,
-      isRateLimit: (e) => e instanceof OpenLibraryRateLimitError,
+      isRateLimit: isRateLimitError,
+      delayMs: DELAY_MS,
+      retryDelayMs: 60_000,
     });
     setRunning(false);
-    if (!ctrl.signal.aborted) toast.success(`Copertine trovate: ${result.found} su ${result.total}`);
+    if (!ctrl.signal.aborted) {
+      toast.success(`Completati ${result.completed} libri su ${result.total} (${result.fields} campi)`);
+    }
   }
 
   function stop() {
@@ -47,12 +59,13 @@ export function MissingCoversButton({ books }: { books: Book[] }) {
   }
 
   const pct = progress && progress.total ? Math.round((progress.processed / progress.total) * 100) : 0;
+  const minutes = Math.max(1, Math.ceil((missing * DELAY_MS) / 60_000));
 
   return (
     <>
       <Button variant="outline" onClick={() => void start()} disabled={running || missing === 0}>
-        {running ? <Loader2 className="animate-spin" /> : <ImageDown />}
-        Recupera copertine mancanti
+        {running ? <Loader2 className="animate-spin" /> : <WandSparkles />}
+        Completa dati mancanti
         {missing > 0 && <span className="tabular-nums text-muted-foreground">({missing})</span>}
       </Button>
 
@@ -65,9 +78,13 @@ export function MissingCoversButton({ books }: { books: Book[] }) {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="font-display text-2xl font-semibold tracking-wide">Recupero copertine</DialogTitle>
+            <DialogTitle className="font-display text-2xl font-semibold tracking-wide">
+              Completa dati mancanti
+            </DialogTitle>
             <DialogDescription>
-              Cerco su Open Library la prima copertina per titolo e autore e la salvo nella tua libreria.
+              Cerco su Apple Books e Open Library autore, descrizione, pagine e copertina, e compilo solo i
+              campi vuoti: quello che hai già scritto non viene toccato. Tieni aperta la pagina (circa{" "}
+              {minutes} min).
             </DialogDescription>
           </DialogHeader>
 
@@ -78,32 +95,26 @@ export function MissingCoversButton({ books }: { books: Book[] }) {
             </p>
             <div className="grid grid-cols-3 gap-2 text-center text-xs">
               <div className="rounded-[var(--radius)] border-[1.5px] border-line bg-background/40 p-2">
-                <p className="font-display text-xl text-success tabular-nums">{progress?.found ?? 0}</p>
-                trovate
+                <p className="font-display text-xl text-success tabular-nums">{progress?.completed ?? 0}</p>
+                completati
               </div>
               <div className="rounded-[var(--radius)] border-[1.5px] border-line bg-background/40 p-2">
                 <p className="font-display text-xl tabular-nums">{progress?.notFound ?? 0}</p>
-                non trovate
+                non trovati
               </div>
               <div className="rounded-[var(--radius)] border-[1.5px] border-line bg-background/40 p-2">
                 <p className="font-display text-xl text-destructive tabular-nums">{progress?.failed ?? 0}</p>
                 errori
               </div>
             </div>
-            <p className="min-h-5 truncate text-xs text-muted-foreground">
-              {running
-                ? progress?.current
-                  ? `Sto cercando: ${progress.current}`
-                  : "Avvio…"
-                : abortRef.current?.signal.aborted
-                  ? "Interrotto. Puoi riprendere quando vuoi: ripartirà dai libri ancora senza copertina."
-                  : "Finito."}
-            </p>
+            {progress?.current && (
+              <p className="truncate text-xs text-muted-foreground">Sto cercando: {progress.current}</p>
+            )}
           </div>
 
           <DialogFooter>
             {running ? (
-              <Button variant="ghost" onClick={stop}>
+              <Button variant="outline" onClick={stop}>
                 Interrompi
               </Button>
             ) : (

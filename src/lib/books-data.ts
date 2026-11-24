@@ -4,6 +4,7 @@ import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/r
 import type { BookFormValues } from "@/components/library/book-form-dialog";
 import { supabase } from "@/integrations/supabase/client";
 
+import { fillOnlyEmpty, type EnrichPatch } from "./book-enrich";
 import { nextPosition, type Book } from "./books";
 
 const PAGE = 1000;
@@ -73,6 +74,23 @@ export function useBookMutations() {
     );
   }
 
+  /**
+   * Writes web-found data into the book, but only into fields that are still empty
+   * in the latest cached copy (never overwrites manual edits). Returns fields written.
+   */
+  async function fillEmptyFields(id: string, found: EnrichPatch): Promise<number> {
+    const current = qc.getQueryData<Book[]>(booksQueryOptions.queryKey)?.find((b) => b.id === id);
+    if (!current) return 0;
+    const patch = fillOnlyEmpty(current, found);
+    if (Object.keys(patch).length === 0) return 0;
+    const { error } = await supabase.from("books").update(patch).eq("id", id);
+    if (error) throw error;
+    qc.setQueryData<Book[]>(booksQueryOptions.queryKey, (prev) =>
+      prev?.map((b) => (b.id === id ? { ...b, ...patch } : b)),
+    );
+    return Object.keys(patch).length;
+  }
+
   /** Saves a new "Da leggere" order: updates the cache at once, then the changed rows. */
   async function savePositions(updates: { id: string; posizione: number }[]) {
     if (updates.length === 0) return;
@@ -92,6 +110,7 @@ export function useBookMutations() {
 
   return {
     setCover,
+    fillEmptyFields,
     savePositions,
     createBook: (values: BookFormValues) => create.mutateAsync(values),
     updateBook: (id: string, patch: BookPatch) => update.mutateAsync({ id, patch }),

@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { BookFormDialog } from "@/components/library/book-form-dialog";
 import { EmptyState } from "@/components/library/empty-state";
-import { MissingCoversButton } from "@/components/library/missing-covers-button";
+import { MissingDataButton } from "@/components/library/missing-data-button";
 import { PageHeader } from "@/components/library/page-header";
 import { ReadBookRow } from "@/components/library/read-book-row";
 import { Input } from "@/components/ui/input";
@@ -52,7 +52,7 @@ function ReadPage() {
         <PageHeader
           eyebrow={`${total} completati`}
           title="Libri letti"
-          actions={<MissingCoversButton books={scope} />}
+          actions={<MissingDataButton books={scope} />}
         />
 
         <div className="flex flex-col gap-3 sm:flex-row">

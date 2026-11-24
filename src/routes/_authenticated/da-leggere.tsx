@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { BookFormDialog } from "@/components/library/book-form-dialog";
 import { EmptyState } from "@/components/library/empty-state";
-import { MissingCoversButton } from "@/components/library/missing-covers-button";
+import { MissingDataButton } from "@/components/library/missing-data-button";
 import { MarkReadDialog } from "@/components/library/mark-read-dialog";
 import { PageHeader } from "@/components/library/page-header";
 import { SortableBookList } from "@/components/library/sortable-book-list";
@@ -53,7 +53,7 @@ function ToReadPage() {
           title="Da leggere"
           actions={
             <div className="flex flex-wrap gap-2">
-              <MissingCoversButton books={scope} />
+              <MissingDataButton books={scope} />
               <Button onClick={actions.openNew}>
                 <Plus /> Aggiungi libro
               </Button>
