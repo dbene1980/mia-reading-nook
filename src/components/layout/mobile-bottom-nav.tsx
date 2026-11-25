@@ -40,7 +40,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
 /** Fixed bottom navigation shown only below the md breakpoint (768px). */
 export function MobileBottomNav({ onAdd }: { onAdd: () => void }) {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
-  const [home, toRead, read, stats] = NAV_ITEMS;
+  const [home, toRead, read, stats, ai] = NAV_ITEMS;
 
   return (
     <nav
@@ -62,6 +62,7 @@ export function MobileBottomNav({ onAdd }: { onAdd: () => void }) {
         </div>
         <NavLink item={read} active={pathname === read.url} />
         <NavLink item={stats} active={pathname === stats.url} />
+        <NavLink item={ai} active={pathname === ai.url} />
       </div>
     </nav>
   );
