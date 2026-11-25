@@ -27,7 +27,15 @@ interface GeminiResponse {
 }
 
 /**
- * Calls gemini-2.5-flash to get 6 personalised book recommendations.
+ * Calls the best available Gemini flash model to get 6 personalised book
+ * recommendations, with retry on 503 and automatic model fallback on 404/503.
+ *
+ * Priority order:
+ *   1. gemini-3.8-flash  (retry once after 2 s on 503)
+ *   2. gemini-3.8-flash-lite
+ *   3. gemini-2.5-flash-lite
+ *   4. gemini-3.8-pro
+ *   5. First model from /v1beta/models that supports generateContent
  *
  * @param readBooks  Books the user has already read (letto = true)
  * @param toReadTitles  Titles already in "Da leggere" (to exclude)
@@ -73,7 +81,6 @@ Rispondi SOLO con un array JSON puro, senza markdown, senza backtick, senza spie
 ]
 Restituisci esattamente 6 oggetti, niente di più, niente di meno.`;
 
-  const PREFERRED_MODEL = "gemini-3.8-flash";
   const BASE = "https://generativelanguage.googleapis.com/v1beta";
 
   const body = JSON.stringify({
@@ -81,6 +88,9 @@ Restituisci esattamente 6 oggetti, niente di più, niente di meno.`;
     generationConfig: { temperature: 0.9, maxOutputTokens: 2048 },
   });
 
+  const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+  /** POST to a specific model; never throws — returns the Response. */
   async function callModel(model: string): Promise<Response> {
     return fetch(`${BASE}/models/${model}:generateContent?key=${apiKey}`, {
       method: "POST",
@@ -89,35 +99,72 @@ Restituisci esattamente 6 oggetti, niente di più, niente di meno.`;
     });
   }
 
-  /** Discovers the first available flash model that supports generateContent. */
-  async function discoverFlashModel(): Promise<string> {
-    const r = await fetch(`${BASE}/models?key=${apiKey}`);
-    if (!r.ok) throw new Error(`Impossibile elencare i modelli Gemini (${r.status})`);
-    const json = await r.json() as {
-      models?: { name: string; supportedGenerationMethods?: string[] }[];
-    };
-    const flash = (json.models ?? []).find(
-      (m) =>
-        m.name.toLowerCase().includes("flash") &&
+  /**
+   * Try a model once; on 503/429 wait `retryMs` ms and try one more time.
+   * Returns the final Response (may still be non-ok).
+   */
+  async function tryModel(model: string, retryMs = 2000): Promise<Response> {
+    const r = await callModel(model);
+    if (r.status === 503 || r.status === 429) {
+      await sleep(retryMs);
+      return callModel(model);
+    }
+    return r;
+  }
+
+  /** Discovers models from the API, returns the first that supports generateContent. */
+  async function discoverModel(): Promise<string | null> {
+    try {
+      const r = await fetch(`${BASE}/models?key=${apiKey}`);
+      if (!r.ok) return null;
+      const json = await r.json() as {
+        models?: { name: string; supportedGenerationMethods?: string[] }[];
+      };
+      const found = (json.models ?? []).find((m) =>
         (m.supportedGenerationMethods ?? []).includes("generateContent"),
-    );
-    if (!flash) throw new Error("Nessun modello flash disponibile nel tuo account Gemini.");
-    // name is e.g. "models/gemini-2.0-flash" — strip the prefix
-    return flash.name.replace(/^models\//, "");
+      );
+      return found ? found.name.replace(/^models\//, "") : null;
+    } catch {
+      return null;
+    }
   }
 
-  // 1. Try preferred model
-  let res = await callModel(PREFERRED_MODEL);
+  // Priority list: preferred first, then static fallbacks, then dynamic discovery
+  const STATIC_MODELS = [
+    "gemini-3.8-flash",
+    "gemini-3.8-flash-lite",
+    "gemini-2.5-flash-lite",
+    "gemini-3.8-pro",
+  ];
 
-  // 2. On 404 auto-discover and retry once
-  if (res.status === 404) {
-    const fallback = await discoverFlashModel();
-    res = await callModel(fallback);
+  let res: Response | null = null;
+  let lastStatus = 0;
+
+  for (const model of STATIC_MODELS) {
+    res = await tryModel(model);
+    lastStatus = res.status;
+    if (res.ok) break;              // success → stop
+    if (res.status !== 404 && res.status !== 503 && res.status !== 429) break; // hard error → stop
+    // 404 / 503 / 429 → try next
   }
 
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Gemini API error ${res.status}: ${err}`);
+  // If all statics failed with 404/503/429 → try dynamic discovery
+  if (!res?.ok && (lastStatus === 404 || lastStatus === 503 || lastStatus === 429)) {
+    const discovered = await discoverModel();
+    if (discovered) {
+      res = await tryModel(discovered);
+      lastStatus = res.status;
+    }
+  }
+
+  if (!res || !res.ok) {
+    if (lastStatus === 503 || lastStatus === 429) {
+      throw new Error(
+        "Tutti i modelli Gemini sono temporaneamente sovraccarichi. Riprova tra qualche minuto.",
+      );
+    }
+    const errText = res ? await res.text() : "Nessuna risposta";
+    throw new Error(`Errore Gemini (${lastStatus}): ${errText}`);
   }
 
   const data: GeminiResponse = await res.json();
