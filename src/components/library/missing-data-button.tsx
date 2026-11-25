@@ -19,6 +19,7 @@ import {
   lookupMissingData,
   type EnrichProgress,
 } from "@/lib/book-enrich";
+import { cn } from "@/lib/utils";
 import type { Book } from "@/lib/books";
 import { useBookMutations } from "@/lib/books-data";
 
@@ -26,7 +27,7 @@ import { useBookMutations } from "@/lib/books-data";
 const DELAY_MS = 3000;
 
 /** Bulk "Completa dati mancanti": fills only empty author/description/pages/cover fields. */
-export function MissingDataButton({ books }: { books: Book[] }) {
+export function MissingDataButton({ books, className }: { books: Book[]; className?: string }) {
   const { fillEmptyFields } = useBookMutations();
   const [open, setOpen] = useState(false);
   const [running, setRunning] = useState(false);
@@ -63,7 +64,12 @@ export function MissingDataButton({ books }: { books: Book[] }) {
 
   return (
     <>
-      <Button variant="outline" onClick={() => void start()} disabled={running || missing === 0}>
+      <Button
+        variant="outline"
+        onClick={() => void start()}
+        disabled={running || missing === 0}
+        className={cn("h-auto min-h-9 py-2 whitespace-normal text-center min-[480px]:whitespace-nowrap", className)}
+      >
         {running ? <Loader2 className="animate-spin" /> : <WandSparkles />}
         Completa dati mancanti
         {missing > 0 && <span className="tabular-nums text-muted-foreground">({missing})</span>}

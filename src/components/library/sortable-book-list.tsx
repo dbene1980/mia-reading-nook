@@ -49,7 +49,7 @@ function SortableItem({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={cn("relative", isDragging && "z-10 opacity-90 [&>div]:border-primary [&>div]:shadow-lift")}
+      className={cn("relative min-w-0 max-w-full", isDragging && "z-10 opacity-90 [&>div]:border-primary [&>div]:shadow-lift")}
     >
       <BookCard
         book={book}
@@ -91,7 +91,7 @@ export function SortableBookList({ books, onOpen, onReorder, enabled }: Sortable
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <SortableContext items={ids} strategy={verticalListSortingStrategy}>
-        <div className="grid gap-3">
+        <div className="grid grid-cols-1 min-w-0 max-w-full gap-3">
           {books.map((b, i) => (
             <SortableItem key={b.id} book={b} index={i} onOpen={onOpen} enabled={enabled} />
           ))}

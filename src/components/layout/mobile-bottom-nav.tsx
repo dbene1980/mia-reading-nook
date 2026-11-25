@@ -13,7 +13,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
       to={item.url}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "relative flex flex-1 flex-col items-center justify-center gap-1 py-2 text-[11px] font-medium transition-colors",
+        "relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 py-2 text-[10px] min-[380px]:text-[11px] font-medium transition-colors",
         active ? "font-semibold text-gold" : "text-muted-foreground hover:text-foreground",
       )}
     >
@@ -32,7 +32,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
       >
         <item.icon className="size-5" strokeWidth={active ? 2.4 : 2} />
       </span>
-      <span className="leading-none">{item.title}</span>
+      <span className="max-w-full truncate px-0.5 leading-none">{item.title}</span>
     </Link>
   );
 }
@@ -45,7 +45,7 @@ export function MobileBottomNav({ onAdd }: { onAdd: () => void }) {
   return (
     <nav
       aria-label="Navigazione principale"
-      className="fixed inset-x-0 bottom-0 z-30 border-t-[1.5px] border-line/70 bg-sidebar/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 max-w-full border-t-[1.5px] border-line/70 bg-sidebar/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
     >
       <div className="mx-auto flex h-16 max-w-md items-stretch px-1">
         <NavLink item={home} active={pathname === home.url} />

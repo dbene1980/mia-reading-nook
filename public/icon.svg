@@ -1,36 +1,39 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="La Libreria di Daniele">
   <rect width="512" height="512" fill="#0F0E0E"/>
-  <!-- fine-line frame -->
-  <circle cx="256" cy="256" r="226" fill="none" stroke="#D4A359" stroke-width="5"/>
-  <circle cx="256" cy="256" r="208" fill="none" stroke="#D4A359" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.1 17" opacity="0.8"/>
-  <g stroke="#0F0E0E" stroke-width="7" stroke-linejoin="round">
-    <!-- books -->
-    <rect x="138" y="186" width="46" height="176" fill="#C83E37"/>
-    <rect x="184" y="214" width="38" height="148" fill="#D4A359"/>
-    <rect x="222" y="170" width="52" height="192" fill="#C83E37"/>
-    <rect x="274" y="226" width="36" height="136" fill="#D4A359"/>
-    <rect x="310" y="222" width="38" height="140" fill="#C83E37" transform="rotate(20 310 362)"/>
-    <!-- shelf -->
-    <rect x="106" y="358" width="300" height="24" rx="3" fill="#D4A359"/>
-    <path d="M136 382 L150 410 L164 382 Z M348 382 L362 410 L376 382 Z" fill="#D4A359"/>
+  <!-- Centered inside the ~65-70% Android maskable safe-zone so full-bleed #0F0E0E fills edge-to-edge -->
+  <g transform="translate(256 256) scale(0.72) translate(-256 -256)">
+    <!-- fine-line frame -->
+    <circle cx="256" cy="256" r="226" fill="none" stroke="#D4A359" stroke-width="5"/>
+    <circle cx="256" cy="256" r="208" fill="none" stroke="#D4A359" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.1 17" opacity="0.8"/>
+    <g stroke="#0F0E0E" stroke-width="7" stroke-linejoin="round">
+      <!-- books -->
+      <rect x="138" y="186" width="46" height="176" fill="#C83E37"/>
+      <rect x="184" y="214" width="38" height="148" fill="#D4A359"/>
+      <rect x="222" y="170" width="52" height="192" fill="#C83E37"/>
+      <rect x="274" y="226" width="36" height="136" fill="#D4A359"/>
+      <rect x="310" y="222" width="38" height="140" fill="#C83E37" transform="rotate(20 310 362)"/>
+      <!-- shelf -->
+      <rect x="106" y="358" width="300" height="24" rx="3" fill="#D4A359"/>
+      <path d="M136 382 L150 410 L164 382 Z M348 382 L362 410 L376 382 Z" fill="#D4A359"/>
+    </g>
+    <!-- spine bands -->
+    <g stroke="#0F0E0E" stroke-width="6" stroke-linecap="round">
+      <path d="M146 208 H176 M146 340 H176"/>
+      <path d="M192 236 H214 M192 340 H214"/>
+      <path d="M230 194 H266 M230 202 H266 M230 330 H266 M230 338 H266"/>
+      <path d="M282 248 H302 M282 340 H302"/>
+      <path d="M318 246 H340 M318 336 H340" transform="rotate(20 310 362)"/>
+    </g>
+    <g fill="#0F0E0E">
+      <circle cx="161" cy="274" r="7"/>
+      <path d="M248 248 l10 14 -10 14 -10 -14 Z"/>
+      <circle cx="203" cy="288" r="5"/>
+      <circle cx="292" cy="294" r="5"/>
+    </g>
+    <!-- 4-point star -->
+    <path d="M370 72 Q378 138 438 146 Q378 154 370 220 Q362 154 302 146 Q362 138 370 72 Z" fill="#C83E37" stroke="#D4A359" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M136 110 Q139 128 156 131 Q139 134 136 152 Q133 134 116 131 Q133 128 136 110 Z" fill="#D4A359"/>
+    <circle cx="420" cy="232" r="5" fill="#D4A359"/>
+    <circle cx="104" cy="196" r="4" fill="#D4A359"/>
   </g>
-  <!-- spine bands -->
-  <g stroke="#0F0E0E" stroke-width="6" stroke-linecap="round">
-    <path d="M146 208 H176 M146 340 H176"/>
-    <path d="M192 236 H214 M192 340 H214"/>
-    <path d="M230 194 H266 M230 202 H266 M230 330 H266 M230 338 H266"/>
-    <path d="M282 248 H302 M282 340 H302"/>
-    <path d="M318 246 H340 M318 336 H340" transform="rotate(20 310 362)"/>
-  </g>
-  <g fill="#0F0E0E">
-    <circle cx="161" cy="274" r="7"/>
-    <path d="M248 248 l10 14 -10 14 -10 -14 Z"/>
-    <circle cx="203" cy="288" r="5"/>
-    <circle cx="292" cy="294" r="5"/>
-  </g>
-  <!-- 4-point star -->
-  <path d="M370 72 Q378 138 438 146 Q378 154 370 220 Q362 154 302 146 Q362 138 370 72 Z" fill="#C83E37" stroke="#D4A359" stroke-width="6" stroke-linejoin="round"/>
-  <path d="M136 110 Q139 128 156 131 Q139 134 136 152 Q133 134 116 131 Q133 128 136 110 Z" fill="#D4A359"/>
-  <circle cx="420" cy="232" r="5" fill="#D4A359"/>
-  <circle cx="104" cy="196" r="4" fill="#D4A359"/>
 </svg>

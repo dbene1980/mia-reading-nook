@@ -43,7 +43,7 @@ export function GoogleBooksSearch({ onPick }: GoogleBooksSearchProps) {
 
   return (
     <div className="grid gap-3 rounded-[var(--radius)] border-[1.5px] border-line bg-background/40 p-3">
-      <div className="flex gap-2">
+      <div className="flex flex-col gap-2 min-[480px]:flex-row">
         <Input
           aria-label="Cerca un libro"
           placeholder="Cerca un titolo e premi Cerca…"
@@ -55,8 +55,9 @@ export function GoogleBooksSearch({ onPick }: GoogleBooksSearchProps) {
               void run();
             }
           }}
+          className="min-w-0 flex-1"
         />
-        <Button type="button" variant="secondary" onClick={() => void run()} disabled={loading || !query.trim()}>
+        <Button type="button" variant="secondary" className="w-full min-[480px]:w-auto" onClick={() => void run()} disabled={loading || !query.trim()}>
           {loading ? <Loader2 className="animate-spin" /> : <Search />} Cerca
         </Button>
       </div>

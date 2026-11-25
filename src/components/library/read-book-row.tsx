@@ -20,16 +20,16 @@ export function ReadBookRow({ book, onEdit, onUnread, index = 0 }: ReadBookRowPr
   return (
     <article
       style={{ animationDelay: `${Math.min(index, 12) * 30}ms` }}
-      className="flex animate-rise gap-4 ink-card p-3 shadow-card sm:p-4"
+      className="flex min-w-0 max-w-full animate-rise gap-3 ink-card p-3 shadow-card min-[480px]:gap-4 sm:p-4"
     >
       <BookCover url={book.copertina_url} titolo={book.titolo} autore={book.autore} className="w-16 sm:w-20" read />
       <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="flex min-w-0 flex-col gap-2 min-[480px]:flex-row min-[480px]:items-start min-[480px]:justify-between">
           <div className="min-w-0">
-            <h3 className="text-base font-medium leading-snug">{book.titolo}</h3>
-            {book.autore && <p className="text-sm text-muted-foreground">{book.autore}</p>}
+            <h3 className="break-words text-base font-medium leading-snug">{book.titolo}</h3>
+            {book.autore && <p className="truncate text-sm text-muted-foreground">{book.autore}</p>}
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex shrink-0 flex-wrap items-center gap-1">
             <Button size="sm" variant="ghost" onClick={() => onEdit(book)} aria-label="Modifica">
               <Pencil /> <span className="hidden sm:inline">Modifica</span>
             </Button>

@@ -48,12 +48,12 @@ function AuthPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-sm animate-rise">
+    <div className="flex min-h-screen w-full max-w-full items-center justify-center px-4 py-6">
+      <div className="w-full max-w-sm min-w-0 animate-rise">
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
           <BrandLogo className="size-24" />
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold">Ex Libris</p>
-          <h1 className="text-3xl">La Libreria di Daniele</h1>
+          <h1 className="break-words text-2xl min-[480px]:text-3xl">La Libreria di Daniele</h1>
           <OrnamentRule className="w-48" />
           <p className="text-sm text-muted-foreground">Accedi per vedere i tuoi libri.</p>
         </div>

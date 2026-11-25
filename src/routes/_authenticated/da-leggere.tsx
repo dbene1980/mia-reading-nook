@@ -11,17 +11,11 @@ import { PageHeader } from "@/components/library/page-header";
 import { SortableBookList } from "@/components/library/sortable-book-list";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { STATI, filterToRead, type Stato } from "@/lib/books";
 import { useBooks } from "@/lib/books-data";
 import { useBookActions } from "@/lib/use-book-actions";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/da-leggere")({
   head: () => ({
@@ -47,47 +41,77 @@ function ToReadPage() {
 
   return (
     <AppShell>
-      <div className="grid gap-8">
+      <div className="grid grid-cols-1 min-w-0 max-w-full gap-6 sm:gap-8">
         <PageHeader
           eyebrow={`${total} in attesa`}
           title="Da leggere"
           actions={
-            <div className="flex flex-wrap gap-2">
-              <MissingDataButton books={scope} />
-              <Button onClick={actions.openNew}>
+            <div className="flex w-full min-w-0 flex-col gap-2 min-[480px]:w-auto min-[480px]:flex-row min-[480px]:flex-wrap">
+              <MissingDataButton books={scope} className="w-full min-[480px]:w-auto" />
+              <Button onClick={actions.openNew} className="w-full min-[480px]:w-auto">
                 <Plus /> Aggiungi libro
               </Button>
             </div>
           }
         />
 
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <div className="relative flex-1">
+        <div className="grid grid-cols-1 min-w-0 max-w-full gap-3">
+          <div className="relative min-w-0 w-full">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Cerca per titolo o autore"
-              className="pl-9"
+              className="w-full pl-9"
             />
           </div>
-          <Select value={stato} onValueChange={(v) => setStato(v as Stato | "ALL")}>
-            <SelectTrigger className="sm:w-52">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">Tutti gli stati</SelectItem>
-              {STATI.map((s) => (
-                <SelectItem key={s} value={s}>
+          <div
+            role="group"
+            aria-label="Filtra per stato"
+            className="flex w-full max-w-full min-w-0 items-center gap-2 overflow-x-auto pb-1"
+          >
+            <button
+              type="button"
+              onClick={() => setStato("ALL")}
+              aria-pressed={stato === "ALL"}
+              className={cn(
+                "shrink-0 whitespace-nowrap rounded-[3px] border-[1.5px] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors cursor-pointer",
+                stato === "ALL"
+                  ? "border-gold bg-gold/15 text-gold"
+                  : "border-line/70 bg-card text-muted-foreground hover:border-gold/60 hover:text-foreground",
+              )}
+            >
+              Tutti gli stati
+            </button>
+            {STATI.map((s) => {
+              const active = stato === s;
+              const isReading = s === "STO LEGGENDO";
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setStato(s)}
+                  aria-pressed={active}
+                  className={cn(
+                    "shrink-0 whitespace-nowrap rounded-[3px] border-[1.5px] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors cursor-pointer",
+                    isReading
+                      ? active
+                        ? "border-gold bg-primary text-primary-foreground shadow-[2px_2px_0_0_color-mix(in_oklab,var(--gold)_45%,transparent)]"
+                        : "border-primary/70 bg-primary/15 text-foreground hover:border-gold hover:bg-primary/25"
+                      : active
+                        ? "border-gold bg-gold/15 text-gold"
+                        : "border-line/70 bg-card text-muted-foreground hover:border-gold/60 hover:text-foreground",
+                  )}
+                >
                   {s}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {isLoading ? (
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid grid-cols-1 min-w-0 max-w-full gap-3 md:grid-cols-2">
             {Array.from({ length: 4 }).map((_, i) => (
               <Skeleton key={i} className="h-32 rounded-[var(--radius)]" />
             ))}
@@ -99,12 +123,14 @@ function ToReadPage() {
               : "Prova a cambiare la ricerca o il filtro."}
           </EmptyState>
         ) : (
-          <div className="grid gap-3">
-            <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <GripVertical className="size-3.5" />
-              {canReorder
-                ? "Trascina la maniglia a destra per cambiare la priorità: l'ordine si salva subito."
-                : "Togli ricerca e filtro per riordinare i libri."}
+          <div className="grid grid-cols-1 min-w-0 max-w-full gap-3">
+            <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
+              <GripVertical className="mt-0.5 size-3.5 shrink-0" />
+              <span>
+                {canReorder
+                  ? "Trascina la maniglia a destra per cambiare la priorità: i libri 'STO LEGGENDO' restano sempre in cima."
+                  : "Togli ricerca e filtro per riordinare i libri."}
+              </span>
             </p>
             <SortableBookList
               books={list}

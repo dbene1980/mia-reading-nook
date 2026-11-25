@@ -29,10 +29,10 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full">
+      <div className="flex min-h-screen w-full max-w-full overflow-x-clip">
         <AppSidebar />
-        <SidebarInset className="bg-transparent">
-          <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-3 border-b-[1.5px] border-line/60 bg-background/85 px-4 backdrop-blur sm:px-6">
+        <SidebarInset className="min-w-0 max-w-full bg-transparent">
+          <header className="sticky top-0 z-20 flex h-14 w-full max-w-full items-center justify-between gap-2 border-b-[1.5px] border-line/60 bg-background/85 px-3 backdrop-blur sm:gap-3 sm:px-6">
             <SidebarTrigger className="hidden md:inline-flex" />
             <Link to="/" className="flex min-w-0 items-center gap-2 md:hidden">
               <BrandLogo className="size-8" />
@@ -47,7 +47,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </Button>
             </div>
           </header>
-          <div className="mx-auto w-full max-w-5xl flex-1 px-4 pt-8 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-8 md:py-10">
+          <div className="mx-auto w-full max-w-5xl min-w-0 flex-1 px-4 pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-8 sm:pt-8 md:py-10">
             {children}
           </div>
         </SidebarInset>

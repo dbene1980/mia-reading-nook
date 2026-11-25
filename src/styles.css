@@ -69,6 +69,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   /* Status stamp colors */
+  --color-status-stoleggendo: var(--status-stoleggendo);
   --color-status-scaricato: var(--status-scaricato);
   --color-status-comprato: var(--status-comprato);
   --color-status-dascaricare: var(--status-dascaricare);
@@ -111,6 +112,7 @@
   --input: oklch(0.42 0.03 68);
   --ring: oklch(0.746 0.109 76.1);
 
+  --status-stoleggendo: var(--primary);
   --status-scaricato: oklch(0.74 0.1 150);
   --status-comprato: oklch(0.746 0.109 76.1);
   --status-dascaricare: oklch(0.75 0.08 220);
@@ -153,9 +155,13 @@
 
   html {
     color-scheme: dark;
+    overflow-x: hidden;
+    max-width: 100%;
   }
 
   body {
+    overflow-x: hidden;
+    max-width: 100%;
     background-color: var(--color-background);
     background-image: var(--gradient-glow);
     background-attachment: fixed;

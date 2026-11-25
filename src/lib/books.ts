@@ -1,4 +1,4 @@
-export const STATI = ["SCARICATO", "COMPRATO", "DA SCARICARE", "DA COMPRARE", "NON TROVATO"] as const;
+export const STATI = ["STO LEGGENDO", "SCARICATO", "COMPRATO", "DA SCARICARE", "DA COMPRARE", "NON TROVATO"] as const;
 export const TIPI = ["LIBRO", "EBOOK", "AUDIOLIBRO", "FUMETTO"] as const;
 
 export type Stato = (typeof STATI)[number];
@@ -26,8 +26,9 @@ export interface Book {
 
 export const STATO_BADGE: Record<
   Stato,
-  "scaricato" | "comprato" | "dascaricare" | "dacomprare" | "nontrovato"
+  "stoleggendo" | "scaricato" | "comprato" | "dascaricare" | "dacomprare" | "nontrovato"
 > = {
+    "STO LEGGENDO": "stoleggendo",
     SCARICATO: "scaricato",
     COMPRATO: "comprato",
     "DA SCARICARE": "dascaricare",
@@ -65,8 +66,11 @@ export function filterToRead(books: Book[], opts: { query: string; stato: Stato 
     .sort(byPriority);
 }
 
-/** "Da leggere" order: posizione ascending, newest first on ties. */
+/** "Da leggere" order: "STO LEGGENDO" first, then posizione ascending, newest first on ties. */
 export function byPriority(a: Book, b: Book) {
+  const aReading = a.stato === "STO LEGGENDO" ? 0 : 1;
+  const bReading = b.stato === "STO LEGGENDO" ? 0 : 1;
+  if (aReading !== bReading) return aReading - bReading;
   return a.posizione - b.posizione || b.created_at.localeCompare(a.created_at);
 }
 

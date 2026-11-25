@@ -15,6 +15,8 @@ const badgeVariants = cva(
           "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
         outline: "text-foreground",
         // Stato: rubber-stamp look — sharp colored outline, uppercase, spaced letters.
+        stoleggendo:
+          "border-gold bg-primary text-primary-foreground uppercase shadow-[2px_2px_0_0_color-mix(in_oklab,var(--gold)_45%,transparent)]",
         scaricato: "border-status-scaricato bg-status-scaricato/8 text-status-scaricato uppercase",
         comprato: "border-status-comprato bg-status-comprato/8 text-status-comprato uppercase",
         dascaricare: "border-status-dascaricare bg-status-dascaricare/8 text-status-dascaricare uppercase",

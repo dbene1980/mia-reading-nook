@@ -49,13 +49,13 @@ function StatsPage() {
 
   return (
     <AppShell>
-      <div className="grid gap-8">
+      <div className="grid grid-cols-1 min-w-0 max-w-full gap-6 sm:gap-8">
         <PageHeader
           eyebrow="Le tue letture"
           title="Statistiche"
           actions={
             <Select value={String(year)} onValueChange={(v) => setYear(v === "ALL" ? "ALL" : Number(v))}>
-              <SelectTrigger className="w-44" aria-label="Anno">
+              <SelectTrigger className="w-full min-[480px]:w-44" aria-label="Anno">
                 <CalendarRange className="size-4 text-muted-foreground" />
                 <SelectValue />
               </SelectTrigger>
@@ -72,14 +72,14 @@ function StatsPage() {
         />
 
         {isLoading ? (
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div className="grid min-w-0 max-w-full grid-cols-2 gap-3 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
               <Skeleton key={i} className="h-36 rounded-[var(--radius)]" />
             ))}
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <div className="grid min-w-0 max-w-full grid-cols-2 gap-3 lg:grid-cols-4">
               <Kpi icon={CalendarRange} label="Media libri al mese" value={fmt(s.avgPerMonth)} index={0}>
                 {year === "ALL" ? "dal primo libro finito" : `su ${year === new Date().getFullYear() ? new Date().getMonth() + 1 : 12} mesi`}
               </Kpi>
@@ -131,26 +131,26 @@ function StatsPage() {
               </EmptyState>
             ) : (
               <>
-                <section className="grid gap-4 ink-card p-4 shadow-card sm:p-6">
-                  <div>
+                <section className="grid grid-cols-1 min-w-0 max-w-full gap-4 overflow-hidden ink-card p-4 shadow-card sm:p-6">
+                  <div className="min-w-0">
                     <h2 className="text-xl">Libri letti per mese</h2>
                     <p className="text-sm text-muted-foreground">
                       {year === "ALL" ? "Tutti gli anni sommati per mese" : `Gennaio – dicembre ${year}`}
                     </p>
                   </div>
-                  <ChartContainer config={chartConfig} className="aspect-auto h-64 w-full">
+                  <ChartContainer config={chartConfig} className="aspect-auto h-64 w-full min-w-0 max-w-full">
                     <BarChart data={s.byMonth} margin={{ left: -20, right: 4, top: 8 }}>
                       <CartesianGrid vertical={false} />
-                      <XAxis dataKey="mese" tickLine={false} axisLine={false} interval={0} fontSize={11} />
-                      <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={40} />
+                      <XAxis dataKey="mese" tickLine={false} axisLine={false} interval={0} fontSize={10} />
+                      <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={36} />
                       <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
                       <Bar dataKey="libri" fill="var(--color-libri)" radius={[2, 2, 0, 0]} maxBarSize={36} />
                     </BarChart>
                   </ChartContainer>
                 </section>
 
-                <div className="grid gap-4 md:grid-cols-2">
-                  <section className="grid content-start gap-4 ink-card p-4 shadow-card sm:p-6">
+                <div className="grid grid-cols-1 min-w-0 max-w-full gap-4 md:grid-cols-2">
+                  <section className="grid grid-cols-1 min-w-0 max-w-full content-start gap-4 ink-card p-4 shadow-card sm:p-6">
                     <h2 className="text-xl">Per numero di stelle</h2>
                     <div className="grid gap-2.5">
                       {[...s.byRating].reverse().map((r) => (
@@ -174,7 +174,7 @@ function StatsPage() {
                     </p>
                   </section>
 
-                  <section className="grid content-start gap-4 ink-card p-4 shadow-card sm:p-6">
+                  <section className="grid grid-cols-1 min-w-0 max-w-full content-start gap-4 ink-card p-4 shadow-card sm:p-6">
                     <h2 className="text-xl">Per formato</h2>
                     <div className="grid gap-2.5">
                       {s.formats.map((f) => (
@@ -219,7 +219,7 @@ function Kpi({
   return (
     <div
       style={{ animationDelay: `${index * 60}ms` }}
-      className="flex animate-rise flex-col ink-card p-4 shadow-card sm:p-5"
+      className="flex min-w-0 max-w-full animate-rise flex-col ink-card p-3.5 shadow-card sm:p-5"
     >
       <Icon className="size-5 text-gold" />
       <p
@@ -251,7 +251,7 @@ function DistributionRow({
   barClass: string;
 }) {
   return (
-    <div className="grid grid-cols-[6.5rem_minmax(0,1fr)_4.5rem] items-center gap-3">
+    <div className="grid min-w-0 grid-cols-[5.5rem_minmax(0,1fr)_3.75rem] items-center gap-2 min-[480px]:grid-cols-[6.5rem_minmax(0,1fr)_4.5rem] min-[480px]:gap-3">
       {label}
       <div className="h-2 overflow-hidden rounded-[2px] border border-line/40 bg-background">
         <div className={cn("h-full transition-all", barClass)} style={{ width: `${ratio * 100}%` }} />

@@ -171,15 +171,15 @@ export function BookFormDialog({
             </Button>
           )}
 
-          <div className="grid grid-cols-[88px_minmax(0,1fr)] gap-4 sm:grid-cols-[128px_minmax(0,1fr)] sm:gap-5">
+          <div className="grid grid-cols-1 gap-4 min-[480px]:grid-cols-[100px_minmax(0,1fr)] sm:grid-cols-[128px_minmax(0,1fr)] sm:gap-5">
             <BookCover
               url={emptyToNull(cover)}
               titolo={titolo || "Senza titolo"}
               autore={emptyToNull(autore)}
-              className="w-full self-start"
+              className="mx-auto w-24 min-[480px]:mx-0 min-[480px]:w-full self-start"
               read={isRead}
             />
-            <div className="grid gap-4">
+            <div className="grid min-w-0 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="titolo">Titolo *</Label>
                 <Input
@@ -193,7 +193,7 @@ export function BookFormDialog({
                 <Label htmlFor="autore">Autore</Label>
                 <Input id="autore" value={autore} onChange={(e) => setAutore(e.target.value)} />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 min-[480px]:grid-cols-2">
                 <div className="grid gap-2">
                   <Label>Stato</Label>
                   <Select value={stato} onValueChange={setStato}>
@@ -282,12 +282,12 @@ export function BookFormDialog({
             <Textarea id="note" rows={2} value={note} onChange={(e) => setNote(e.target.value)} />
           </div>
 
-          <DialogFooter className="gap-2 sm:justify-between">
+          <DialogFooter className="flex-col gap-2 min-[480px]:flex-row min-[480px]:justify-between">
             {book && onDelete ? (
               <Button
                 type="button"
                 variant="ghost"
-                className="text-destructive hover:text-destructive"
+                className="w-full justify-center text-destructive hover:text-destructive min-[480px]:w-auto"
                 onClick={() => {
                   if (confirm(`Eliminare "${book.titolo}"?`)) onDelete(book);
                 }}
@@ -295,9 +295,9 @@ export function BookFormDialog({
                 <Trash2 /> Elimina
               </Button>
             ) : (
-              <span />
+              <span className="hidden min-[480px]:inline" />
             )}
-            <div className="flex gap-2">
+            <div className="flex flex-wrap justify-end gap-2">
               <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
                 Annulla
               </Button>

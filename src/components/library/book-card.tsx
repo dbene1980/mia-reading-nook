@@ -17,21 +17,21 @@ export function BookCard({ book, onOpen, index = 0, handle }: BookCardProps) {
   return (
     <div
       style={{ animationDelay: `${Math.min(index, 12) * 30}ms` }}
-      className="group flex animate-rise items-stretch ink-card shadow-card transition-all hover:border-gold hover:shadow-lift"
+      className="group flex min-w-0 max-w-full animate-rise items-stretch ink-card shadow-card transition-all hover:border-gold hover:shadow-lift"
     >
       <button
         type="button"
         onClick={() => onOpen(book)}
-        className="flex min-w-0 flex-1 gap-4 rounded-xl p-3 text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        className="flex min-w-0 flex-1 gap-3 rounded-xl p-2.5 text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring min-[480px]:gap-4 min-[480px]:p-3"
       >
-        <BookCover url={book.copertina_url} titolo={book.titolo} autore={book.autore} className="w-20 sm:w-24" />
+        <BookCover url={book.copertina_url} titolo={book.titolo} autore={book.autore} className="w-16 min-[480px]:w-20 sm:w-24" />
         <div className="flex min-w-0 flex-1 flex-col gap-1.5 py-0.5">
-          <h3 className="line-clamp-2 text-base font-medium leading-snug text-foreground group-hover:text-primary">
+          <h3 className="line-clamp-2 break-words text-base font-medium leading-snug text-foreground group-hover:text-primary">
             {book.titolo}
           </h3>
           {book.autore && <p className="truncate text-sm text-muted-foreground">{book.autore}</p>}
           {book.descrizione && (
-            <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground/80">
+            <p className="line-clamp-2 break-words text-xs leading-relaxed text-muted-foreground/80">
               {book.descrizione}
             </p>
           )}

@@ -157,6 +157,27 @@ describe("Priorità Da leggere", () => {
       nextPosition([book({ posizione: 4 }), book({ posizione: 9, letto: true }), book({ posizione: 2 })]),
     ).toBe(5);
   });
+
+  it("always puts STO LEGGENDO books first in Da leggere, followed by posizione ascending", () => {
+    const res = filterToRead(
+      [
+        book({ id: "first-pos", stato: "SCARICATO", posizione: 1 }),
+        book({ id: "reading-late", stato: "STO LEGGENDO", posizione: 10 }),
+        book({ id: "second-pos", stato: "COMPRATO", posizione: 2 }),
+        book({ id: "reading-early", stato: "STO LEGGENDO", posizione: 4 }),
+      ],
+      { query: "", stato: "ALL" },
+    );
+    expect(res.map((b) => b.id)).toEqual(["reading-early", "reading-late", "first-pos", "second-pos"]);
+  });
+
+  it("filters by STO LEGGENDO stato", () => {
+    const res = filterToRead(
+      [book({ id: "a", stato: "STO LEGGENDO" }), book({ id: "b", stato: "SCARICATO" })],
+      { query: "", stato: "STO LEGGENDO" },
+    );
+    expect(res.map((b) => b.id)).toEqual(["a"]);
+  });
 });
 
 describe("Statistiche", () => {

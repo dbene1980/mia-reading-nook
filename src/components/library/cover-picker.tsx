@@ -80,11 +80,11 @@ export function CoverPicker({ titolo, autore, value, onChange, onPick }: CoverPi
             onChange={(e) => onChange(e.target.value)}
             className="min-w-0 flex-1"
           />
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               type="button"
               variant="secondary"
-              className="flex-1 sm:flex-none"
+              className="flex-1 min-[480px]:flex-none"
               onClick={() => void run()}
               disabled={loading || !titolo.trim()}
             >

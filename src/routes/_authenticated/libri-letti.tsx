@@ -20,6 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TIPI, TIPO_LABEL, filterRead, type Tipo } from "@/lib/books";
 import { useBooks } from "@/lib/books-data";
 import { useBookActions } from "@/lib/use-book-actions";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/libri-letti")({
   head: () => ({
@@ -48,53 +49,71 @@ function ReadPage() {
 
   return (
     <AppShell>
-      <div className="grid gap-8">
+      <div className="grid grid-cols-1 min-w-0 max-w-full gap-6 sm:gap-8">
         <PageHeader
           eyebrow={`${total} completati`}
           title="Libri letti"
-          actions={<MissingDataButton books={scope} />}
+          actions={<MissingDataButton books={scope} className="w-full min-[480px]:w-auto" />}
         />
 
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <div className="relative flex-1">
+        <div className="grid grid-cols-1 min-w-0 max-w-full gap-3">
+          <div className="relative min-w-0 w-full">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Cerca per titolo o autore"
-              className="pl-9"
+              className="w-full pl-9"
             />
           </div>
-          <Select value={tipo} onValueChange={(v) => setTipo(v as Tipo | "ALL")}>
-            <SelectTrigger className="sm:w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">Tutti i tipi</SelectItem>
-              {TIPI.map((t) => (
-                <SelectItem key={t} value={t}>
-                  {TIPO_LABEL[t]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={rating} onValueChange={setRating}>
-            <SelectTrigger className="sm:w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">Ogni voto</SelectItem>
-              {[5, 4, 3, 2, 1].map((n) => (
-                <SelectItem key={n} value={String(n)}>
-                  {"★".repeat(n)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex w-full max-w-full min-w-0 items-center gap-2 overflow-x-auto pb-1">
+            <button
+              type="button"
+              onClick={() => setTipo("ALL")}
+              aria-pressed={tipo === "ALL"}
+              className={cn(
+                "shrink-0 whitespace-nowrap rounded-[3px] border-[1.5px] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors cursor-pointer",
+                tipo === "ALL"
+                  ? "border-gold bg-gold/15 text-gold"
+                  : "border-line/70 bg-card text-muted-foreground hover:border-gold/60 hover:text-foreground",
+              )}
+            >
+              Tutti i tipi
+            </button>
+            {TIPI.map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setTipo(t)}
+                aria-pressed={tipo === t}
+                className={cn(
+                  "shrink-0 whitespace-nowrap rounded-[3px] border-[1.5px] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors cursor-pointer",
+                  tipo === t
+                    ? "border-gold bg-gold/15 text-gold"
+                    : "border-line/70 bg-card text-muted-foreground hover:border-gold/60 hover:text-foreground",
+                )}
+              >
+                {TIPO_LABEL[t]}
+              </button>
+            ))}
+            <Select value={rating} onValueChange={setRating}>
+              <SelectTrigger className="h-8 w-36 shrink-0" aria-label="Filtra per voto">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">Ogni voto</SelectItem>
+                {[5, 4, 3, 2, 1].map((n) => (
+                  <SelectItem key={n} value={String(n)}>
+                    {"★".repeat(n)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {isLoading ? (
-          <div className="grid gap-3">
+          <div className="grid grid-cols-1 min-w-0 max-w-full gap-3">
             {Array.from({ length: 4 }).map((_, i) => (
               <Skeleton key={i} className="h-28 rounded-[var(--radius)]" />
             ))}
@@ -106,7 +125,7 @@ function ReadPage() {
               : "Prova a cambiare la ricerca o i filtri."}
           </EmptyState>
         ) : (
-          <div className="grid gap-3">
+          <div className="grid grid-cols-1 min-w-0 max-w-full gap-3">
             {list.map((b, i) => (
               <ReadBookRow
                 key={b.id}
