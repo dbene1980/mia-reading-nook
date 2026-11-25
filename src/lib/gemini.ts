@@ -73,16 +73,47 @@ Rispondi SOLO con un array JSON puro, senza markdown, senza backtick, senza spie
 ]
 Restituisci esattamente 6 oggetti, niente di più, niente di meno.`;
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+  const PREFERRED_MODEL = "gemini-3.8-flash";
+  const BASE = "https://generativelanguage.googleapis.com/v1beta";
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.9, maxOutputTokens: 2048 },
-    }),
+  const body = JSON.stringify({
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: { temperature: 0.9, maxOutputTokens: 2048 },
   });
+
+  async function callModel(model: string): Promise<Response> {
+    return fetch(`${BASE}/models/${model}:generateContent?key=${apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+    });
+  }
+
+  /** Discovers the first available flash model that supports generateContent. */
+  async function discoverFlashModel(): Promise<string> {
+    const r = await fetch(`${BASE}/models?key=${apiKey}`);
+    if (!r.ok) throw new Error(`Impossibile elencare i modelli Gemini (${r.status})`);
+    const json = await r.json() as {
+      models?: { name: string; supportedGenerationMethods?: string[] }[];
+    };
+    const flash = (json.models ?? []).find(
+      (m) =>
+        m.name.toLowerCase().includes("flash") &&
+        (m.supportedGenerationMethods ?? []).includes("generateContent"),
+    );
+    if (!flash) throw new Error("Nessun modello flash disponibile nel tuo account Gemini.");
+    // name is e.g. "models/gemini-2.0-flash" — strip the prefix
+    return flash.name.replace(/^models\//, "");
+  }
+
+  // 1. Try preferred model
+  let res = await callModel(PREFERRED_MODEL);
+
+  // 2. On 404 auto-discover and retry once
+  if (res.status === 404) {
+    const fallback = await discoverFlashModel();
+    res = await callModel(fallback);
+  }
 
   if (!res.ok) {
     const err = await res.text();
