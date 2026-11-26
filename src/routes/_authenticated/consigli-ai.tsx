@@ -295,7 +295,7 @@ function ConsigliAiPage() {
     <AppShell>
       <div className="grid grid-cols-1 min-w-0 max-w-full gap-6 sm:gap-10">
         <PageHeader
-          eyebrow="Powered by Groq · Llama 3.3"
+          eyebrow="Powered by Groq"
           title="Consigli AI"
           icon={<Sparkles className="size-5 text-gold" />}
         />

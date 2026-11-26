@@ -43,9 +43,84 @@ export interface ReadBookSummary {
   note: string | null;
 }
 
+interface GroqModel {
+  id: string;
+  active?: boolean;
+}
+
+interface GroqModelsResponse {
+  data?: GroqModel[];
+}
+
+const EXCLUDED_MODEL_PARTS = ["whisper", "guard", "tts", "audio"];
+const MODEL_PRIORITY = [
+  "llama-3.3",
+  "llama-4",
+  "llama-3.1-70b",
+  "qwen",
+  "deepseek",
+  "gemma",
+  "llama",
+];
+
 /**
- * Calls Groq Chat Completions (llama-3.3-70b-versatile) to get 6 personalised
- * book recommendations in JSON format.
+ * Fetches active models from Groq and picks the best text generation model
+ * available for the user's API key.
+ */
+async function selectBestGroqModel(apiKey: string): Promise<string> {
+  const res = await fetch("https://api.groq.com/openai/v1/models", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    if (res.status === 401) {
+      throw new Error("Groq API Key non valida o scaduta. Controlla la chiave nelle impostazioni.");
+    }
+    throw new Error(`Impossibile recuperare i modelli Groq (${res.status}): ${errText}`);
+  }
+
+  const json = (await res.json()) as GroqModelsResponse;
+  const models = (json.data ?? []).filter((m) => m.active !== false);
+
+  const textModels = models.filter((m) => {
+    const id = m.id.toLowerCase();
+    return !EXCLUDED_MODEL_PARTS.some((part) => id.includes(part));
+  });
+
+  // Prefer non-vision text models first, keeping vision only if nothing else matches
+  const nonVision = textModels.filter((m) => !m.id.toLowerCase().includes("vision"));
+  const candidates = nonVision.length > 0 ? nonVision : textModels;
+
+  for (const prefix of MODEL_PRIORITY) {
+    const found = candidates.find((m) => m.id.toLowerCase().includes(prefix));
+    if (found) return found.id;
+  }
+
+  if (candidates.length > 0) return candidates[0]!.id;
+  throw new Error("Nessun modello di testo disponibile per questa Groq API Key.");
+}
+
+function extractJsonObject(raw: string): { consigli?: AiBook[] } {
+  const cleaned = raw.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
+  try {
+    return JSON.parse(cleaned) as { consigli?: AiBook[] };
+  } catch {
+    const start = cleaned.indexOf("{");
+    const end = cleaned.lastIndexOf("}");
+    if (start !== -1 && end > start) {
+      return JSON.parse(cleaned.slice(start, end + 1)) as { consigli?: AiBook[] };
+    }
+    throw new Error("JSON non trovato nella risposta.");
+  }
+}
+
+/**
+ * Calls Groq Chat Completions using the best active model discovered for the
+ * API key, returning 6 personalised book recommendations in JSON format.
  */
 export async function fetchGroqRecommendations(
   readBooks: ReadBookSummary[],
@@ -98,23 +173,31 @@ ${readList || "Nessuno ancora"}${moodLine}
 LIBRI DA ESCLUDERE (già letti o già in 'Da leggere'):
 ${excludeList || "Nessuno"}`;
 
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
-      response_format: { type: "json_object" },
-      temperature: 0.7,
-      max_tokens: 2048,
-      messages: [
-        { role: "system", content: systemMessage },
-        { role: "user", content: userMessage },
-      ],
-    }),
-  });
+  const modelId = await selectBestGroqModel(apiKey);
+
+  const callChat = (useJsonFormat: boolean) =>
+    fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: modelId,
+        ...(useJsonFormat ? { response_format: { type: "json_object" } } : {}),
+        temperature: 0.7,
+        max_tokens: 2048,
+        messages: [
+          { role: "system", content: systemMessage },
+          { role: "user", content: userMessage },
+        ],
+      }),
+    });
+
+  let res = await callChat(true);
+  if (res.status === 400) {
+    res = await callChat(false);
+  }
 
   if (!res.ok) {
     const errText = await res.text();
@@ -131,7 +214,7 @@ ${excludeList || "Nessuno"}`;
   const raw = data.choices?.[0]?.message?.content ?? "";
 
   try {
-    const parsed = JSON.parse(raw) as { consigli?: AiBook[] };
+    const parsed = extractJsonObject(raw);
     if (!Array.isArray(parsed.consigli)) {
       throw new Error("Campo 'consigli' mancante nella risposta JSON.");
     }
