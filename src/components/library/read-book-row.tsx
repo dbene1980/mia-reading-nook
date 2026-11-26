@@ -19,24 +19,46 @@ interface ReadBookRowProps {
 export function ReadBookRow({ book, onEdit, onUnread, index = 0 }: ReadBookRowProps) {
   return (
     <article
+      role="button"
+      tabIndex={0}
+      onClick={() => onEdit(book)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onEdit(book);
+        }
+      }}
       style={{ animationDelay: `${Math.min(index, 12) * 30}ms` }}
-      className="flex min-w-0 max-w-full animate-rise gap-3 ink-card p-3 shadow-card min-[480px]:gap-4 sm:p-4"
+      className="group flex min-w-0 max-w-full cursor-pointer animate-rise gap-3 ink-card p-3 shadow-card transition-all hover:border-gold hover:shadow-lift focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring min-[480px]:gap-4 sm:p-4"
     >
       <BookCover url={book.copertina_url} titolo={book.titolo} autore={book.autore} className="w-16 sm:w-20" read />
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <div className="flex min-w-0 flex-col gap-2 min-[480px]:flex-row min-[480px]:items-start min-[480px]:justify-between">
           <div className="min-w-0">
-            <h3 className="break-words text-base font-medium leading-snug">{book.titolo}</h3>
+            <h3 className="break-words text-base font-medium leading-snug text-foreground group-hover:text-primary">
+              {book.titolo}
+            </h3>
             {book.autore && <p className="truncate text-sm text-muted-foreground">{book.autore}</p>}
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-1">
-            <Button size="sm" variant="ghost" onClick={() => onEdit(book)} aria-label="Modifica">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(book);
+              }}
+              aria-label="Modifica"
+            >
               <Pencil /> <span className="hidden sm:inline">Modifica</span>
             </Button>
             <Button
               size="sm"
               variant="ghost"
-              onClick={() => onUnread(book)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onUnread(book);
+              }}
               aria-label="Riporta in Da leggere"
             >
               <Undo2 /> <span className="hidden sm:inline">Da leggere</span>
