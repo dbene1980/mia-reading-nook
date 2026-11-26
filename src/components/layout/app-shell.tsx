@@ -4,12 +4,10 @@ import { LogOut } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { BrandLogo } from "@/components/brand/brand-logo";
-import { BookFormDialog } from "@/components/library/book-form-dialog";
 import { Button } from "@/components/ui/button";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { supabase } from "@/integrations/supabase/client";
 import { useBooks } from "@/lib/books-data";
-import { useBookActions } from "@/lib/use-book-actions";
 
 import { AppSidebar } from "./app-sidebar";
 import { ExportCsvButton } from "./export-csv-button";
@@ -19,7 +17,6 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { books } = useBooks();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const quickAdd = useBookActions();
 
   async function signOut() {
     await queryClient.cancelQueries();
@@ -53,13 +50,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </SidebarInset>
       </div>
 
-      <MobileBottomNav onAdd={quickAdd.openNew} />
-      <BookFormDialog
-        open={quickAdd.formOpen}
-        onOpenChange={quickAdd.setFormOpen}
-        book={null}
-        onSave={quickAdd.save}
-      />
+      <MobileBottomNav />
     </SidebarProvider>
   );
 }

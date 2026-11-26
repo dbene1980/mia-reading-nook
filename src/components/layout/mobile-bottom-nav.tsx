@@ -1,5 +1,4 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -38,7 +37,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
 }
 
 /** Fixed bottom navigation shown only below the md breakpoint (768px). */
-export function MobileBottomNav({ onAdd }: { onAdd: () => void }) {
+export function MobileBottomNav() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   const [home, toRead, read, stats, ai] = NAV_ITEMS;
 
@@ -50,16 +49,6 @@ export function MobileBottomNav({ onAdd }: { onAdd: () => void }) {
       <div className="mx-auto flex h-16 max-w-md items-stretch px-1">
         <NavLink item={home} active={pathname === home.url} />
         <NavLink item={toRead} active={pathname === toRead.url} />
-        <div className="flex flex-1 items-center justify-center">
-          <button
-            type="button"
-            onClick={onAdd}
-            aria-label="Aggiungi libro"
-            className="-mt-6 flex size-14 items-center justify-center rounded-full border-[3px] border-gold bg-primary ring-4 ring-background text-primary-foreground shadow-lift transition-transform active:scale-95"
-          >
-            <Plus className="size-6" strokeWidth={2.5} />
-          </button>
-        </div>
         <NavLink item={read} active={pathname === read.url} />
         <NavLink item={stats} active={pathname === stats.url} />
         <NavLink item={ai} active={pathname === ai.url} />

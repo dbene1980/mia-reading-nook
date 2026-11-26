@@ -275,6 +275,7 @@ export function BookFormDialog({
               rows={3}
               value={descrizione}
               onChange={(e) => setDescrizione(e.target.value)}
+              className="max-h-40 overflow-y-auto pr-2"
             />
           </div>
           <div className="grid gap-2">
