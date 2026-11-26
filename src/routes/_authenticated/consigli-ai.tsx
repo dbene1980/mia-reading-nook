@@ -1,33 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BookPlus, Eye, EyeOff, Loader2, Sparkles, X } from "lucide-react";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { OrnamentRule } from "@/components/brand/ornaments";
 import { AppShell } from "@/components/layout/app-shell";
 import { PageHeader } from "@/components/library/page-header";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useBooks } from "@/lib/books-data";
-import { useBookMutations } from "@/lib/books-data";
+import { useBookMutations, useBooks } from "@/lib/books-data";
 import {
   type AiBook,
-  fetchCover,
-  fetchGeminiRecommendations,
-  getGeminiKey,
-  GEMINI_KEY_STORAGE,
-  setGeminiKey,
-} from "@/lib/gemini";
-import { nextPosition } from "@/lib/books";
+  fetchBookDetails,
+  fetchGroqRecommendations,
+  getGroqKey,
+  setGroqKey,
+} from "@/lib/groq";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/consigli-ai")({
   head: () => ({
     meta: [
       { title: "Consigli AI · La Libreria di Daniele" },
-      { name: "description", content: "Consigli di lettura personalizzati generati da Gemini AI." },
+      { name: "description", content: "Consigli di lettura personalizzati generati da Groq AI." },
     ],
   }),
   component: ConsigliAiPage,
@@ -37,7 +33,7 @@ export const Route = createFileRoute("/_authenticated/consigli-ai")({
 
 interface RecommendedCard extends AiBook {
   coverUrl: string | null;
-  coverLoading: boolean;
+  pagine: number | null;
   added: boolean;
   adding: boolean;
 }
@@ -53,11 +49,7 @@ function BookRecommendCard({
     <div className="ink-card flex min-w-0 flex-col gap-0 overflow-hidden shadow-card">
       {/* Cover */}
       <div className="relative h-44 w-full overflow-hidden bg-zinc-900">
-        {card.coverLoading ? (
-          <div className="flex h-full items-center justify-center">
-            <Loader2 className="size-6 animate-spin text-gold/60" />
-          </div>
-        ) : card.coverUrl ? (
+        {card.coverUrl ? (
           <img
             src={card.coverUrl}
             alt={`Copertina di ${card.titolo}`}
@@ -76,7 +68,10 @@ function BookRecommendCard({
           <h3 className="break-words font-display text-base font-semibold leading-snug">
             {card.titolo}
           </h3>
-          <p className="mt-0.5 text-xs text-gold">{card.autore}</p>
+          <p className="mt-0.5 text-xs text-gold">
+            {card.autore}
+            {card.pagine ? ` · ${card.pagine} pag.` : ""}
+          </p>
         </div>
 
         <p className="line-clamp-4 text-xs leading-relaxed text-muted-foreground">
@@ -118,18 +113,18 @@ function BookRecommendCard({
 /* ---------- API key panel ---------- */
 
 function ApiKeyPanel({ onSaved }: { onSaved: () => void }) {
-  const [key, setKey] = useState(getGeminiKey);
+  const [key, setKey] = useState(getGroqKey);
   const [show, setShow] = useState(false);
-  const [open, setOpen] = useState(!getGeminiKey());
+  const [open, setOpen] = useState(() => !getGroqKey());
 
   if (!open) {
     return (
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+        className="w-fit text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
       >
-        ⚙ Modifica Gemini API Key
+        ⚙ Modifica Groq API Key
       </button>
     );
   }
@@ -138,23 +133,24 @@ function ApiKeyPanel({ onSaved }: { onSaved: () => void }) {
     <div className="ink-card flex flex-col gap-3 p-4">
       <div className="flex items-center justify-between">
         <Label className="text-xs font-semibold uppercase tracking-widest text-gold">
-          Gemini API Key
+          Groq API Key
         </Label>
-        {getGeminiKey() && (
+        {getGroqKey() && (
           <button
             type="button"
             onClick={() => setOpen(false)}
             className="text-muted-foreground hover:text-foreground"
+            aria-label="Chiudi pannello API Key"
           >
             <X className="size-4" />
           </button>
         )}
       </div>
-      <p className="text-[11px] text-muted-foreground leading-relaxed">
+      <p className="text-[11px] leading-relaxed text-muted-foreground">
         La chiave viene salvata solo nel tuo browser (localStorage) e non viene mai inviata a
         GitHub.{" "}
         <a
-          href="https://aistudio.google.com/app/apikey"
+          href="https://console.groq.com/keys"
           target="_blank"
           rel="noopener noreferrer"
           className="text-gold underline underline-offset-2"
@@ -168,7 +164,7 @@ function ApiKeyPanel({ onSaved }: { onSaved: () => void }) {
             type={show ? "text" : "password"}
             value={key}
             onChange={(e) => setKey(e.target.value)}
-            placeholder="AIzaSy..."
+            placeholder="gsk_..."
             className="pr-9 font-mono text-xs"
           />
           <button
@@ -183,7 +179,7 @@ function ApiKeyPanel({ onSaved }: { onSaved: () => void }) {
         <Button
           size="sm"
           onClick={() => {
-            setGeminiKey(key);
+            setGroqKey(key);
             setOpen(false);
             onSaved();
           }}
@@ -223,51 +219,43 @@ function ConsigliAiPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cards, setCards] = useState<RecommendedCard[]>([]);
-  const [keyVersion, setKeyVersion] = useState(0); // forces re-render after key save
+  const [, setKeyVersion] = useState(0);
 
-  // keep latest books ref for adding
-  const booksRef = useRef(books);
-  booksRef.current = books;
-
-  const hasKey = !!getGeminiKey();
+  const hasKey = !!getGroqKey();
 
   const generate = useCallback(async () => {
-    const apiKey = getGeminiKey();
+    const apiKey = getGroqKey();
     if (!apiKey) {
-      setError("Inserisci una Gemini API Key per continuare.");
+      setError("Inserisci una Groq API Key per continuare.");
       return;
     }
     setLoading(true);
     setError(null);
     setCards([]);
 
-    let aiBooks: AiBook[];
     try {
-      aiBooks = await fetchGeminiRecommendations(readBooks, toReadTitles, mood, apiKey);
+      const aiBooks = await fetchGroqRecommendations(readBooks, toReadTitles, mood, apiKey);
+
+      // Parallel fetch of covers & page counts for all 6 books
+      const enriched = await Promise.all(
+        aiBooks.map(async (b) => {
+          const details = await fetchBookDetails(b.titolo, b.autore);
+          return {
+            ...b,
+            coverUrl: details.coverUrl,
+            pagine: details.pagine,
+            added: false,
+            adding: false,
+          } satisfies RecommendedCard;
+        }),
+      );
+
+      setCards(enriched);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
+    } finally {
       setLoading(false);
-      return;
     }
-
-    // Initialise cards (covers load in parallel after)
-    const initial: RecommendedCard[] = aiBooks.map((b) => ({
-      ...b,
-      coverUrl: null,
-      coverLoading: true,
-      added: false,
-      adding: false,
-    }));
-    setCards(initial);
-    setLoading(false);
-
-    // Fetch covers in parallel
-    aiBooks.forEach(async (b, i) => {
-      const url = await fetchCover(b.titolo, b.autore);
-      setCards((prev) =>
-        prev.map((c, j) => (j === i ? { ...c, coverUrl: url, coverLoading: false } : c)),
-      );
-    });
   }, [readBooks, toReadTitles, mood]);
 
   const handleAdd = useCallback(
@@ -285,7 +273,7 @@ function ConsigliAiPage() {
           tipo: null,
           note: null,
           rating: null,
-          pagine: null,
+          pagine: card.pagine,
           data_fine_libro: null,
         });
         setCards((prev) =>
@@ -307,18 +295,14 @@ function ConsigliAiPage() {
     <AppShell>
       <div className="grid grid-cols-1 min-w-0 max-w-full gap-6 sm:gap-10">
         <PageHeader
-          eyebrow="Powered by Gemini"
+          eyebrow="Powered by Groq · Llama 3.3"
           title="Consigli AI"
           icon={<Sparkles className="size-5 text-gold" />}
         />
 
         <div className="grid grid-cols-1 gap-4">
-          {/* API Key */}
-          <ApiKeyPanel
-            onSaved={() => setKeyVersion((v) => v + 1)}
-          />
+          <ApiKeyPanel onSaved={() => setKeyVersion((v) => v + 1)} />
 
-          {/* Mood input */}
           <div className="flex flex-col gap-1.5">
             <Label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Umore o genere del momento{" "}
@@ -333,11 +317,10 @@ function ConsigliAiPage() {
             />
           </div>
 
-          {/* Generate button */}
           <Button
             size="lg"
             onClick={generate}
-            disabled={loading || (!hasKey && keyVersion >= 0)}
+            disabled={loading || !hasKey}
             className="w-full sm:w-auto"
           >
             {loading ? (
@@ -358,7 +341,6 @@ function ConsigliAiPage() {
           )}
         </div>
 
-        {/* Results */}
         {cards.length > 0 && (
           <>
             <OrnamentRule />
@@ -374,7 +356,6 @@ function ConsigliAiPage() {
           </>
         )}
 
-        {/* Empty state before first generation */}
         {cards.length === 0 && !loading && !error && (
           <div className="flex flex-col items-center gap-3 py-16 text-center text-muted-foreground">
             <Sparkles className="size-10 opacity-30" />
