@@ -52,7 +52,7 @@ interface GroqModelsResponse {
   data?: GroqModel[];
 }
 
-const EXCLUDED_MODEL_PARTS = ["whisper", "guard", "tts", "audio"];
+const EXCLUDED_MODEL_PARTS = ["whisper", "guard", "tts", "audio", "embed"];
 const MODEL_PRIORITY = [
   "llama-3.3",
   "llama-4",
@@ -63,11 +63,19 @@ const MODEL_PRIORITY = [
   "llama",
 ];
 
+function modelRank(id: string): number {
+  const lower = id.toLowerCase();
+  const idx = MODEL_PRIORITY.findIndex((prefix) => lower.includes(prefix));
+  const priorityScore = idx === -1 ? MODEL_PRIORITY.length : idx;
+  const visionPenalty = lower.includes("vision") ? 100 : 0;
+  return priorityScore + visionPenalty;
+}
+
 /**
- * Fetches active models from Groq and picks the best text generation model
- * available for the user's API key.
+ * Fetches active models from Groq and returns all candidate text generation
+ * model IDs sorted by preference, so 404s can fall back to the next model.
  */
-async function selectBestGroqModel(apiKey: string): Promise<string> {
+async function getCandidateGroqModels(apiKey: string): Promise<string[]> {
   const res = await fetch("https://api.groq.com/openai/v1/models", {
     method: "GET",
     headers: {
@@ -86,22 +94,19 @@ async function selectBestGroqModel(apiKey: string): Promise<string> {
   const json = (await res.json()) as GroqModelsResponse;
   const models = (json.data ?? []).filter((m) => m.active !== false);
 
-  const textModels = models.filter((m) => {
-    const id = m.id.toLowerCase();
-    return !EXCLUDED_MODEL_PARTS.some((part) => id.includes(part));
-  });
+  const textModels = models
+    .filter((m) => {
+      const id = m.id.toLowerCase();
+      return !EXCLUDED_MODEL_PARTS.some((part) => id.includes(part));
+    })
+    .sort((a, b) => modelRank(a.id) - modelRank(b.id))
+    .map((m) => m.id);
 
-  // Prefer non-vision text models first, keeping vision only if nothing else matches
-  const nonVision = textModels.filter((m) => !m.id.toLowerCase().includes("vision"));
-  const candidates = nonVision.length > 0 ? nonVision : textModels;
-
-  for (const prefix of MODEL_PRIORITY) {
-    const found = candidates.find((m) => m.id.toLowerCase().includes(prefix));
-    if (found) return found.id;
+  if (textModels.length === 0) {
+    throw new Error("Nessun modello di testo disponibile per questa Groq API Key.");
   }
 
-  if (candidates.length > 0) return candidates[0]!.id;
-  throw new Error("Nessun modello di testo disponibile per questa Groq API Key.");
+  return textModels;
 }
 
 function extractJsonObject(raw: string): { consigli?: AiBook[] } {
@@ -173,9 +178,9 @@ ${readList || "Nessuno ancora"}${moodLine}
 LIBRI DA ESCLUDERE (già letti o già in 'Da leggere'):
 ${excludeList || "Nessuno"}`;
 
-  const modelId = await selectBestGroqModel(apiKey);
+  const candidateModels = await getCandidateGroqModels(apiKey);
 
-  const callChat = (useJsonFormat: boolean) =>
+  const callChat = (modelId: string, useJsonFormat: boolean) =>
     fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -194,20 +199,30 @@ ${excludeList || "Nessuno"}`;
       }),
     });
 
-  let res = await callChat(true);
-  if (res.status === 400) {
-    res = await callChat(false);
+  let res: Response | null = null;
+  for (const modelId of candidateModels) {
+    res = await callChat(modelId, true);
+    if (res.status === 400) {
+      res = await callChat(modelId, false);
+    }
+    if (res.ok) break;
+    if (res.status === 404 || res.status === 403) {
+      // Model inaccessible or deprecated for this key: try next candidate
+      continue;
+    }
+    break;
   }
 
-  if (!res.ok) {
-    const errText = await res.text();
-    if (res.status === 401) {
+  if (!res || !res.ok) {
+    const status = res?.status ?? 0;
+    const errText = res ? await res.text() : "Nessuna risposta";
+    if (status === 401) {
       throw new Error("Groq API Key non valida o scaduta. Controlla la chiave nelle impostazioni.");
     }
-    if (res.status === 429) {
+    if (status === 429) {
       throw new Error("Limite richieste Groq raggiunto. Riprova tra qualche secondo.");
     }
-    throw new Error(`Errore Groq (${res.status}): ${errText}`);
+    throw new Error(`Errore Groq (${status}): ${errText}`);
   }
 
   const data: GroqResponse = await res.json();
