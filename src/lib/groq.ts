@@ -133,26 +133,31 @@ export async function fetchGroqRecommendations(
   mood: string,
   apiKey: string,
 ): Promise<AiBook[]> {
-  // Prioritise highest-rated books so the model focuses on the user's favourites
-  const sortedRead = [...readBooks].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+  // Prioritise highest-rated books and cap to keep prompt well below Groq's ITPM limit
+  const topRead = [...readBooks]
+    .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
+    .slice(0, 25);
 
-  const readList = sortedRead
-    .map(
-      (b) =>
-        `- "${b.titolo}"${b.autore ? ` di ${b.autore}` : ""}` +
-        (b.rating ? ` (voto: ${b.rating}/5)` : "") +
-        (b.note ? ` [note: ${b.note}]` : ""),
-    )
+  const readList = topRead
+    .map((b) => {
+      const note = b.note ? ` [${b.note.trim().slice(0, 60)}]` : "";
+      return `- ${b.titolo}${b.autore ? ` (${b.autore})` : ""}${b.rating ? ` ${b.rating}/5` : ""}${note}`;
+    })
     .join("\n");
 
-  const excludeTitles = [
-    ...readBooks.map((b) => b.titolo),
-    ...toReadTitles,
-  ];
-  const excludeList = excludeTitles.map((t) => `- "${t}"`).join("\n");
+  // Compact comma-separated exclude list capped at ~2500 chars (~700 tokens)
+  const allExclude = Array.from(
+    new Set([...toReadTitles, ...readBooks.map((b) => b.titolo)].map((t) => t.trim()).filter(Boolean)),
+  );
+  let excludeList = "";
+  for (const title of allExclude) {
+    const next = excludeList ? `${excludeList}, ${title}` : title;
+    if (next.length > 2500) break;
+    excludeList = next;
+  }
 
   const moodLine = mood.trim()
-    ? `\nUMORE O GENERE RICHIESTO ORA:\n"${mood.trim()}"`
+    ? `\nUMORE O GENERE RICHIESTO ORA:\n"${mood.trim().slice(0, 300)}"`
     : "";
 
   const systemMessage = `Sei un consulente letterario esperto. Rispondi esclusivamente in italiano e SOLO con un oggetto JSON valido avente questa struttura esatta:
@@ -172,10 +177,10 @@ Regole rigorose:
 - "perche_ti_piacera": motivazione personalizzata in italiano di massimo 120 caratteri legata ai gusti e ai libri amati dall'utente.
 - Non consigliare mai nessun titolo presente nella lista dei libri da escludere.`;
 
-  const userMessage = `LIBRI GIÀ LETTI (ordinati dal voto più alto):
+  const userMessage = `LIBRI PREFERITI GIÀ LETTI:
 ${readList || "Nessuno ancora"}${moodLine}
 
-LIBRI DA ESCLUDERE (già letti o già in 'Da leggere'):
+DA ESCLUDERE (già letti o in Da leggere):
 ${excludeList || "Nessuno"}`;
 
   const candidateModels = await getCandidateGroqModels(apiKey);
@@ -206,8 +211,8 @@ ${excludeList || "Nessuno"}`;
       res = await callChat(modelId, false);
     }
     if (res.ok) break;
-    if (res.status === 404 || res.status === 403) {
-      // Model inaccessible or deprecated for this key: try next candidate
+    if (res.status === 404 || res.status === 403 || res.status === 413) {
+      // Model inaccessible, deprecated, or payload too large for this model's ITPM: try next candidate
       continue;
     }
     break;
