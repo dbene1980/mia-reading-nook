@@ -33,14 +33,20 @@ export function MissingDataButton({ books, className }: { books: Book[]; classNa
   const [running, setRunning] = useState(false);
   const [progress, setProgress] = useState<EnrichProgress | null>(null);
   const abortRef = useRef<AbortController | null>(null);
-  const missing = booksMissingData(books).length;
+  const incompleteBooks = booksMissingData(books);
+  const missing = incompleteBooks.length;
 
   async function start() {
+    const todo = booksMissingData(books);
+    if (todo.length === 0) {
+      toast.info("Tutti i libri hanno già i dati completi");
+      return;
+    }
     const ctrl = new AbortController();
     abortRef.current = ctrl;
     setOpen(true);
     setRunning(true);
-    const result = await fillMissingData(books, {
+    const result = await fillMissingData(todo, {
       signal: ctrl.signal,
       find: (b, signal) => lookupMissingData(b, signal),
       save: (b, patch) => fillEmptyFields(b.id, patch),
@@ -67,7 +73,7 @@ export function MissingDataButton({ books, className }: { books: Book[]; classNa
       <Button
         variant="outline"
         onClick={() => void start()}
-        disabled={running || missing === 0}
+        disabled={running}
         className={cn("h-auto min-h-9 py-2 whitespace-normal text-center min-[480px]:whitespace-nowrap", className)}
       >
         {running ? <Loader2 className="animate-spin" /> : <WandSparkles />}
