@@ -5,6 +5,7 @@ import {
   computeStats,
   filterRead,
   filterToRead,
+  formatBookCopyText,
   moveId,
   nextPosition,
   positionUpdates,
@@ -59,6 +60,14 @@ describe("Da leggere", () => {
       { query: "", stato: "SCARICATO" },
     );
     expect(res.map((b) => b.id)).toEqual(["b"]);
+  });
+
+  it("formats title and author for clipboard copy", () => {
+    expect(formatBookCopyText(book({ titolo: " Il nome della rosa ", autore: " Umberto Eco " }))).toBe(
+      "Il nome della rosa Umberto Eco",
+    );
+    expect(formatBookCopyText(book({ titolo: "Dune", autore: null }))).toBe("Dune");
+    expect(formatBookCopyText(book({ titolo: "Dune", autore: "   " }))).toBe("Dune");
   });
 });
 

@@ -58,6 +58,13 @@ export function matchesQuery(book: Pick<Book, "titolo" | "autore">, query: strin
   return normalize(book.titolo).includes(q) || normalize(book.autore).includes(q);
 }
 
+/** Formats a book's title and author for clipboard copy. */
+export function formatBookCopyText(book: Pick<Book, "titolo" | "autore">) {
+  const titolo = book.titolo.trim();
+  const autore = book.autore?.trim();
+  return autore ? `${titolo} ${autore}` : titolo;
+}
+
 export function filterToRead(books: Book[], opts: { query: string; stato: Stato | "ALL" }) {
   return books
     .filter((b) => !b.letto)
