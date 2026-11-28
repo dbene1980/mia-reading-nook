@@ -16,7 +16,7 @@ export function ExLibrisStamp({ className }: { className?: string }) {
       <circle cx="60" cy="60" r="31" fill="none" stroke="currentColor" strokeWidth="1.5" />
       <text
         fill="currentColor"
-        fontFamily="Cinzel, serif"
+        fontFamily="Plus Jakarta Sans, -apple-system, BlinkMacSystemFont, sans-serif"
         fontSize="11.5"
         fontWeight="700"
         letterSpacing="2.4"

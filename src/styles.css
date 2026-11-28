@@ -12,13 +12,13 @@
  * Design system — "Dark Ink" (Traditional Tattoo & Fine Line): ink-black background,
  * warm charcoal cards, ivory paper text, vermilion primary (buttons, stars), antique
  * gold details. Crisp 1.5px flash-sheet outlines, small radii, hard offset shadows.
- * Cinzel for main headings, Bitter for book titles, Inter for body text. Dark-only.
+ * Plus Jakarta Sans throughout. Dark-only.
  */
 
 @theme inline {
-  --font-display: "Cinzel", "Times New Roman", serif;
-  --font-serif: "Bitter", Georgia, serif;
-  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
 
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
@@ -157,6 +157,14 @@
     color-scheme: dark;
     overflow-x: hidden;
     max-width: 100%;
+    font-family: var(--font-sans);
+  }
+
+  body,
+  input,
+  textarea,
+  button {
+    font-family: var(--font-sans);
   }
 
   body {
@@ -166,7 +174,6 @@
     background-image: var(--gradient-glow);
     background-attachment: fixed;
     color: var(--color-foreground);
-    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
 
