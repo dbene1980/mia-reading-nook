@@ -65,7 +65,7 @@ function HomePage() {
               key={c.label}
               to={c.to}
               style={{ animationDelay: `${i * 60}ms` }}
-              className="group relative min-w-0 animate-rise overflow-hidden ink-card p-2.5 shadow-card min-[480px]:p-3 sm:p-5 transition-all hover:-translate-y-0.5 hover:border-gold hover:shadow-lift"
+              className="group relative min-w-0 animate-rise overflow-hidden ink-card p-2.5 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-lift min-[480px]:p-3 sm:p-5"
             >
               <c.icon className="size-5 text-gold" />
               <p className="mt-3 font-display text-2xl font-semibold tabular-nums min-[400px]:text-3xl sm:mt-6 sm:text-5xl">
@@ -91,7 +91,7 @@ function HomePage() {
                 <div
                   key={book.id}
                   style={{ animationDelay: `${i * 60}ms` }}
-                  className="flex min-w-0 max-w-full animate-rise gap-3 ink-card p-3 shadow-card"
+                  className="flex min-w-0 max-w-full animate-rise gap-3 ink-card p-3 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lift"
                 >
                   <BookCover
                     url={book.copertina_url}

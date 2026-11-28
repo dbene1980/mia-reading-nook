@@ -46,7 +46,7 @@ function BookRecommendCard({
   onAdd: (card: RecommendedCard) => void;
 }) {
   return (
-    <div className="ink-card flex min-w-0 flex-col gap-0 overflow-hidden shadow-card">
+    <div className="ink-card flex min-w-0 flex-col gap-0 overflow-hidden shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lift">
       {/* Cover */}
       <div className="relative h-44 w-full overflow-hidden bg-zinc-900">
         {card.coverUrl ? (
@@ -78,7 +78,7 @@ function BookRecommendCard({
           {card.descrizione}
         </p>
 
-        <div className="rounded-sm border border-primary/30 bg-primary/10 px-3 py-2">
+        <div className="rounded-xl border border-primary/20 bg-primary/10 px-3 py-2">
           <p className="text-[11px] italic leading-relaxed text-foreground/80">
             <span className="not-italic font-semibold text-gold">✦ Perché ti piacerà: </span>
             {card.perche_ti_piacera}
@@ -130,7 +130,7 @@ function ApiKeyPanel({ onSaved }: { onSaved: () => void }) {
   }
 
   return (
-    <div className="ink-card flex flex-col gap-3 p-4">
+    <div className="ink-card flex flex-col gap-3 p-4 shadow-card">
       <div className="flex items-center justify-between">
         <Label className="text-xs font-semibold uppercase tracking-widest text-gold">
           Groq API Key
@@ -335,7 +335,7 @@ function ConsigliAiPage() {
           </Button>
 
           {error && (
-            <div className="rounded-sm border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
               {error}
             </div>
           )}

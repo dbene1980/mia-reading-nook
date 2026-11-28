@@ -253,7 +253,7 @@ function DistributionRow({
   return (
     <div className="grid min-w-0 grid-cols-[5.5rem_minmax(0,1fr)_3.75rem] items-center gap-2 min-[480px]:grid-cols-[6.5rem_minmax(0,1fr)_4.5rem] min-[480px]:gap-3">
       {label}
-      <div className="h-2 overflow-hidden rounded-[2px] border border-line/40 bg-background">
+      <div className="h-2 overflow-hidden rounded-full border border-line/40 bg-background">
         <div className={cn("h-full transition-all", barClass)} style={{ width: `${ratio * 100}%` }} />
       </div>
       <span className="text-right text-xs tabular-nums text-muted-foreground">

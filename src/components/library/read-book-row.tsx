@@ -29,7 +29,7 @@ export function ReadBookRow({ book, onEdit, onUnread, index = 0 }: ReadBookRowPr
         }
       }}
       style={{ animationDelay: `${Math.min(index, 12) * 30}ms` }}
-      className="group flex min-w-0 max-w-full cursor-pointer animate-rise gap-3 ink-card p-3 shadow-card transition-all hover:border-gold hover:shadow-lift focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring min-[480px]:gap-4 sm:p-4"
+      className="group flex min-w-0 max-w-full cursor-pointer animate-rise gap-3 ink-card p-3 shadow-card transition-all duration-200 hover:border-gold/40 hover:shadow-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 min-[480px]:gap-4 sm:p-4"
     >
       <BookCover url={book.copertina_url} titolo={book.titolo} autore={book.autore} className="w-16 sm:w-20" read />
       <div className="flex min-w-0 flex-1 flex-col gap-2">

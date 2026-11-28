@@ -75,7 +75,7 @@ function ToReadPage() {
               onClick={() => setStato("ALL")}
               aria-pressed={stato === "ALL"}
               className={cn(
-                "shrink-0 whitespace-nowrap rounded-[3px] border-[1.5px] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors cursor-pointer",
+                "shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors cursor-pointer",
                 stato === "ALL"
                   ? "border-gold bg-gold/15 text-gold"
                   : "border-line/70 bg-card text-muted-foreground hover:border-gold/60 hover:text-foreground",
@@ -93,10 +93,10 @@ function ToReadPage() {
                   onClick={() => setStato(s)}
                   aria-pressed={active}
                   className={cn(
-                    "shrink-0 whitespace-nowrap rounded-[3px] border-[1.5px] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors cursor-pointer",
+                    "shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors cursor-pointer",
                     isReading
                       ? active
-                        ? "border-gold bg-primary text-primary-foreground shadow-[2px_2px_0_0_color-mix(in_oklab,var(--gold)_45%,transparent)]"
+                        ? "border-gold/60 bg-primary text-primary-foreground shadow-sm"
                         : "border-primary/70 bg-primary/15 text-foreground hover:border-gold hover:bg-primary/25"
                       : active
                         ? "border-gold bg-gold/15 text-gold"

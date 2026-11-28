@@ -106,15 +106,15 @@ export function MissingDataButton({ books, className }: { books: Book[]; classNa
               {progress?.processed ?? 0} di {progress?.total ?? missing} libri · {pct}%
             </p>
             <div className="grid grid-cols-3 gap-2 text-center text-xs">
-              <div className="rounded-[var(--radius)] border-[1.5px] border-line bg-background/40 p-2">
+              <div className="rounded-xl border border-white/10 bg-white/5 p-2">
                 <p className="font-display text-xl text-success tabular-nums">{progress?.completed ?? 0}</p>
                 completati
               </div>
-              <div className="rounded-[var(--radius)] border-[1.5px] border-line bg-background/40 p-2">
+              <div className="rounded-xl border border-white/10 bg-white/5 p-2">
                 <p className="font-display text-xl tabular-nums">{progress?.notFound ?? 0}</p>
                 non trovati
               </div>
-              <div className="rounded-[var(--radius)] border-[1.5px] border-line bg-background/40 p-2">
+              <div className="rounded-xl border border-white/10 bg-white/5 p-2">
                 <p className="font-display text-xl text-destructive tabular-nums">{progress?.failed ?? 0}</p>
                 errori
               </div>

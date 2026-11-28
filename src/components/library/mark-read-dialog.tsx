@@ -98,7 +98,7 @@ export function MarkReadDialog({ book, open, onOpenChange, onConfirm }: MarkRead
                   onClick={() => setTipo(t)}
                   aria-pressed={tipo === t}
                   className={cn(
-                    "rounded-md border px-2 py-2 text-sm transition-colors",
+                    "rounded-xl border px-2 py-2 text-sm transition-colors",
                     tipo === t
                       ? "border-primary bg-primary/15 text-primary"
                       : "border-border text-muted-foreground hover:bg-accent",

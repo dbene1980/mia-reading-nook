@@ -42,7 +42,7 @@ export function GoogleBooksSearch({ onPick }: GoogleBooksSearchProps) {
   }
 
   return (
-    <div className="grid gap-3 rounded-[var(--radius)] border-[1.5px] border-line bg-background/40 p-3">
+    <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-3">
       <div className="flex flex-col gap-2 min-[480px]:flex-row">
         <Input
           aria-label="Cerca un libro"
@@ -84,7 +84,7 @@ export function GoogleBooksSearch({ onPick }: GoogleBooksSearchProps) {
                   setPickedId(r.id);
                   onPick(r);
                 }}
-                className={`flex w-full items-center gap-3 rounded-md border p-2 text-left transition-colors hover:bg-accent ${
+                className={`flex w-full items-center gap-3 rounded-xl border p-2 text-left transition-colors hover:bg-accent ${
                   pickedId === r.id ? "border-primary bg-accent" : "border-transparent"
                 }`}
               >
@@ -93,10 +93,10 @@ export function GoogleBooksSearch({ onPick }: GoogleBooksSearchProps) {
                     src={r.copertina_url}
                     alt=""
                     loading="lazy"
-                    className="h-14 w-10 shrink-0 rounded-sm object-cover shadow-sm"
+                    className="h-14 w-10 shrink-0 rounded-lg object-cover shadow-sm"
                   />
                 ) : (
-                  <div className="flex h-14 w-10 shrink-0 items-center justify-center rounded-sm bg-muted text-muted-foreground">
+                  <div className="flex h-14 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                     <BookOpen className="size-4" />
                   </div>
                 )}

@@ -244,7 +244,7 @@ export function BookFormDialog({
           </div>
 
           {isRead && (
-            <div className="grid gap-4 rounded-[var(--radius)] border-[1.5px] border-line bg-background/40 p-4 sm:grid-cols-2">
+            <div className="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 sm:grid-cols-2">
               <div className="grid gap-2">
                 <Label htmlFor="data_fine_edit">Data fine lettura</Label>
                 <Input

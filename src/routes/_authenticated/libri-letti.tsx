@@ -72,7 +72,7 @@ function ReadPage() {
               onClick={() => setTipo("ALL")}
               aria-pressed={tipo === "ALL"}
               className={cn(
-                "shrink-0 whitespace-nowrap rounded-[3px] border-[1.5px] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors cursor-pointer",
+                "shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors cursor-pointer",
                 tipo === "ALL"
                   ? "border-gold bg-gold/15 text-gold"
                   : "border-line/70 bg-card text-muted-foreground hover:border-gold/60 hover:text-foreground",
@@ -87,7 +87,7 @@ function ReadPage() {
                 onClick={() => setTipo(t)}
                 aria-pressed={tipo === t}
                 className={cn(
-                  "shrink-0 whitespace-nowrap rounded-[3px] border-[1.5px] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors cursor-pointer",
+                  "shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors cursor-pointer",
                   tipo === t
                     ? "border-gold bg-gold/15 text-gold"
                     : "border-line/70 bg-card text-muted-foreground hover:border-gold/60 hover:text-foreground",

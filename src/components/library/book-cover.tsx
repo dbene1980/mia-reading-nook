@@ -35,7 +35,7 @@ export function BookCover({ url, titolo, autore, className, read }: BookCoverPro
   return (
     <div
       className={cn(
-        "@container relative aspect-[2/3] shrink-0 overflow-hidden rounded-[3px] border-[1.5px] border-line shadow-card",
+        "@container relative aspect-[2/3] shrink-0 overflow-hidden rounded-lg border border-white/10 shadow-sm",
         className,
       )}
     >

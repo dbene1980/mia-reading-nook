@@ -25,7 +25,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
       />
       <span
         className={cn(
-          "flex h-7 w-12 items-center justify-center rounded-[3px] border-[1.5px] border-transparent transition-colors",
+          "flex h-7 w-12 items-center justify-center rounded-xl border border-transparent transition-colors",
           active && "border-gold/50 bg-primary/15",
         )}
       >
@@ -44,7 +44,7 @@ export function MobileBottomNav() {
   return (
     <nav
       aria-label="Navigazione principale"
-      className="fixed inset-x-0 bottom-0 z-30 max-w-full border-t-[1.5px] border-line/70 bg-sidebar/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 max-w-full rounded-t-2xl border-x border-t border-white/10 bg-sidebar/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
     >
       <div className="mx-auto flex h-16 max-w-md items-stretch px-1">
         <NavLink item={home} active={pathname === home.url} />

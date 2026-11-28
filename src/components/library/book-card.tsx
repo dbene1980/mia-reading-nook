@@ -67,7 +67,7 @@ export function BookCard({ book, onOpen, index = 0, handle }: BookCardProps) {
   return (
     <div
       style={{ animationDelay: `${Math.min(index, 12) * 30}ms` }}
-      className="group flex min-w-0 max-w-full animate-rise items-stretch ink-card shadow-card transition-all hover:border-gold hover:shadow-lift"
+      className="group flex min-w-0 max-w-full animate-rise items-stretch ink-card shadow-card transition-all duration-200 hover:border-gold/40 hover:shadow-lift"
     >
       <button
         type="button"
@@ -107,7 +107,7 @@ export function BookCard({ book, onOpen, index = 0, handle }: BookCardProps) {
         aria-label={`Copia titolo e autore di "${book.titolo}"`}
         title="Copia titolo e autore"
         className={cn(
-          "mt-2 mr-2 inline-flex size-7 shrink-0 cursor-pointer self-start items-center justify-center rounded-[var(--radius)] border transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring min-[480px]:mt-2.5 min-[480px]:mr-2.5",
+          "mt-2 mr-2 inline-flex size-7 shrink-0 cursor-pointer self-start items-center justify-center rounded-xl border border-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 min-[480px]:mt-2.5 min-[480px]:mr-2.5",
           copied
             ? "border-gold bg-gold/15 text-gold"
             : "border-line/60 bg-surface/60 text-muted-foreground hover:border-gold hover:bg-gold/10 hover:text-gold",

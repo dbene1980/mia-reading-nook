@@ -137,7 +137,7 @@ export function CoverPicker({ titolo, autore, value, onChange, onPick }: CoverPi
                     onPick?.(c.url);
                   }}
                   className={cn(
-                    "aspect-[2/3] overflow-hidden rounded-[3px] border-2 bg-muted transition-all hover:-translate-y-0.5",
+                    "aspect-[2/3] overflow-hidden rounded-lg border bg-muted transition-all hover:-translate-y-0.5",
                     selected ? "border-primary shadow-lift" : "border-transparent",
                   )}
                 >

@@ -47,7 +47,7 @@ export function AppSidebar() {
                     asChild
                     isActive={pathname === item.url}
                     tooltip={item.title}
-                    className="h-10 rounded-[3px] border-l-2 border-transparent data-[active=true]:border-primary data-[active=true]:font-semibold data-[active=true]:text-gold"
+                    className="h-10 rounded-xl border-l-2 border-transparent data-[active=true]:border-primary data-[active=true]:font-semibold data-[active=true]:text-gold"
                   >
                     <Link to={item.url} onClick={() => setOpenMobile(false)}>
                       <item.icon />

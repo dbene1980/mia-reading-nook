@@ -39,7 +39,7 @@ export function StarRating({ value, onChange, size = "sm", className }: StarRati
             aria-checked={value === n}
             aria-label={`${n} stelle`}
             onClick={() => onChange?.(n)}
-            className="rounded-sm p-0.5 hover:scale-110 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="rounded-full p-0.5 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
           >
             {icon}
           </button>

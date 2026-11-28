@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-[3px] border-[1.5px] px-2 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2",
   {
     variants: {
       variant: {
@@ -14,9 +14,9 @@ const badgeVariants = cva(
         destructive:
           "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
         outline: "text-foreground",
-        // Stato: rubber-stamp look — sharp colored outline, uppercase, spaced letters.
+        // Keep status labels compact and pill-shaped.
         stoleggendo:
-          "border-gold bg-primary text-primary-foreground uppercase shadow-[2px_2px_0_0_color-mix(in_oklab,var(--gold)_45%,transparent)]",
+          "border-gold/60 bg-primary/90 text-primary-foreground uppercase",
         scaricato: "border-status-scaricato bg-status-scaricato/8 text-status-scaricato uppercase",
         comprato: "border-status-comprato bg-status-comprato/8 text-status-comprato uppercase",
         dascaricare: "border-status-dascaricare bg-status-dascaricare/8 text-status-dascaricare uppercase",
